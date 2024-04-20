@@ -17,3 +17,7 @@ class handler(BaseHTTPRequestHandler):
             print(
                 "No se pudo obtener el token de acceso. La reserva de sesión no se ha realizado."
             )
+        self.send_response(200)
+        self.send_header("Content-type", "text/plain")
+        self.end_headers()
+        return
