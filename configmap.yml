@@ -1,0 +1,28 @@
+jordi:
+  reservations:
+    tuesday:
+      - activity: BODY COMBAT
+        time: "00:00"
+    wednesday:
+      - activity: BODY COMBAT
+        time: "00:00"
+    thursday:
+      - activity: CROSS TRAINING
+        time: "00:00"
+    friday:
+      - activity: CROSS TRAINING
+        time: "18:00"
+juan:
+  reservations:
+    tuesday:
+      - activity: BODY COMBAT
+        time: "19:00"
+    wednesday:
+      - activity: BODY COMBAT
+        time: "20:00"
+    thursday:
+      - activity: CROSS TRAINING
+        time: "19:00"
+    friday:
+      - activity: CROSS TRAINING
+        time: "18:00"
