@@ -1,4 +1,4 @@
 requests
 requests_html
-yaml
+pyyaml
 json
