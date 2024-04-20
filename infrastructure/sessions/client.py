@@ -22,7 +22,7 @@ def format_date_for_payload() -> str:
     return desired_date.strftime("%a %b %d %Y %H:%M:%S GMT%z")
 
 
-def get_sessions(cookies) -> str | None:
+def get_sessions(cookies):
     url = "https://adherent.fitnesspark.es/ajax/sessions"
     payload = f"week={format_date_for_payload()}"
     response = requests.request(
