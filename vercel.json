@@ -4,5 +4,15 @@
             "source": "/",
             "destination": "/api"
         }
+    ],
+    "crons": [
+        {
+            "path": "/api/book_session",
+            "schedule": "0 19 * * *"
+        },
+        {
+            "path": "/api/book_session",
+            "schedule": "* * * * *"
+        }
     ]
 }
