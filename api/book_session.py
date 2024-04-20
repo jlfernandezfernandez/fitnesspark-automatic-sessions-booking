@@ -1,20 +1,19 @@
 import os
+from http.server import BaseHTTPRequestHandler
 from infrastructure.mobile_api.client import login
 
 
-def book_session():
-    username = os.environ.get("USERNAME") or "default"
-    password = os.environ.get("PASSWORD") or "default"
+class handler(BaseHTTPRequestHandler):
 
-    access_token = login(username, password)
+    def do_GET(self):
+        username = os.environ.get("USERNAME") or "default"
+        password = os.environ.get("PASSWORD") or "default"
 
-    if access_token:
-        print(f"Token de acceso obtenido correctamente: {access_token}")
-    else:
-        print(
-            "No se pudo obtener el token de acceso. La reserva de sesión no se ha realizado."
-        )
+        access_token = login(username, password)
 
-
-if __name__ == "__main__":
-    book_session()
+        if access_token:
+            print(f"Token de acceso obtenido correctamente: {access_token}")
+        else:
+            print(
+                "No se pudo obtener el token de acceso. La reserva de sesión no se ha realizado."
+            )
