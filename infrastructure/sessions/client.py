@@ -31,6 +31,8 @@ def get_sessions(cookies):
     if response.ok:
         json_response = json.loads(response.text)
         return json_response["sessions"]
+    else:
+        print(f"Error {response.status_code} al obtener sesiones")
 
 
 def book_session(cookies, session_id):
