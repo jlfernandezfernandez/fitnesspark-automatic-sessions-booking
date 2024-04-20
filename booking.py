@@ -57,6 +57,8 @@ def book(key, name):
         session_name, session_hour, session_id = session_info
         print(f"Reservando sesión {session_name} a las {session_hour} para {name}")
         book_session(cookies, session_id)
+    else:
+        print(f"No se ha encontrado ninguna sesión para {name}")
 
 
 def __main__():
