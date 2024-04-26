@@ -7,7 +7,11 @@
     ],
     "crons": [
         {
-            "path": "/api/book_session",
+            "path": "/api/booking_worker_1",
+            "schedule": "0 19 * * *"
+        },
+        {
+            "path": "/api/booking_worker_2",
             "schedule": "0 19 * * *"
         }
     ]
