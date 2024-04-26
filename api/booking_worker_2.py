@@ -1,6 +1,6 @@
 import os
 from http.server import BaseHTTPRequestHandler
-from booking import book
+from api.utils.booking import book
 
 
 class handler(BaseHTTPRequestHandler):

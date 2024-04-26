@@ -1,7 +1,8 @@
 import datetime
 import yaml
-from infrastructure.virtual_gym.client import login
-from infrastructure.sessions.client import get_sessions, book_session
+
+from api.utils.virtual_gym.client import login
+from api.utils.sessions.client import get_sessions, book_session
 
 days_of_week = [
     "monday",
