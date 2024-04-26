@@ -1,10 +1,4 @@
 {
-    "redirects": [
-        {
-            "source": "/",
-            "destination": "/api"
-        }
-    ],
     "crons": [
         {
             "path": "/api/booking_worker_1",
