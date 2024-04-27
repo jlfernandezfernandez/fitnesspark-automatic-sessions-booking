@@ -2,7 +2,7 @@ from requests_html import HTMLSession
 
 
 def build_url(key):
-    base_url = "https://fitnesspark-acoruna-marineda.virtuagym.com/autologin"
+    base_url = "https://virtuagym.com/autologin"
     query_params = {
         "redirect": "autologin?member_information_forward=https://adherent.fitnesspark.es/autologin/planning",
         "in_app": "1",
