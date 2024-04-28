@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Home() {
   return (
     <main className="flex h-screen flex-col md:flex-row">
@@ -18,13 +20,19 @@ export default function Home() {
       </div>
       <div className="flex-1 w-full md:w-1/2 lg:w-1/3 bg-white flex flex-col items-center justify-center p-4">
         <p className="text-3xl mb-4 font-bold text-black/75">Empieza ahora</p>
-        <div className="w-full px-10 flex flex-col md:flex-row md:space-x-2">
-          <button className="bg-yellow-fitnesspark text-black font-bold py-2 px-4 rounded w-full md:w-1/2 mb-2 md:mb-0">
+        <div className="w-full px-10 flex flex-col md:flex-row md:space-x-2 text-center">
+          <Link
+            href="/login"
+            className="bg-yellow-fitnesspark text-black font-bold py-2 px-4 rounded w-full md:w-1/2 mb-2 md:mb-0"
+          >
             Iniciar Sesión
-          </button>
-          <button className="bg-white hover:bg-gray-100 border border-black text-black font-bold py-2 px-4 rounded w-full md:w-1/2">
+          </Link>
+          <Link
+            href="/register"
+            className="bg-white hover:bg-gray-100 border border-black text-black font-bold py-2 px-4 rounded w-full md:w-1/2"
+          >
             Registrarse
-          </button>
+          </Link>
         </div>
       </div>
     </main>

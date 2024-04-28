@@ -38,3 +38,11 @@ body {
   font-weight: normal;
   font-style: normal;
 }
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  transition: background-color 5000s ease-in-out 0s; /* Transición larga para efectivamente 'anular' el cambio de color de fondo */
+  -webkit-text-fill-color: inherit !important; /* Asegura que el color del texto no cambie, opcional si deseas mantener el color del texto */
+}

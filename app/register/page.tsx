@@ -9,21 +9,21 @@ export default function Page() {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-
-    const formData = new FormData();
-    formData.append("email", email);
-    formData.append("password", password);
-
     try {
-      const response = await fetch("/api/login", {
+      const response = await fetch("/api/register", {
         method: "POST",
-        body: formData,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password,
+        }),
       });
 
       if (!response.ok) {
         throw new Error("Something went wrong");
       }
-
       const result = await response.json();
       console.log(result);
     } catch (error) {
@@ -35,7 +35,7 @@ export default function Page() {
     <div className="flex justify-center items-center h-screen bg-white p-4">
       <div className="rounded w-full max-w-md">
         <h1 className="text-2xl font-bold mb-5 text-center">
-          Bienvenido de nuevo
+          Crear una cuenta
         </h1>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
