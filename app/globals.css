@@ -31,3 +31,10 @@ body {
     text-wrap: balance;
   }
 }
+
+@font-face {
+  font-family: "CactusBold";
+  src: url("/fonts/CactusBold.ttf") format("truetype"); /* Ajusta el formato dependiendo del archivo que tengas */
+  font-weight: normal;
+  font-style: normal;
+}
