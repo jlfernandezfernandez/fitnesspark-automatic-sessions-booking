@@ -34,7 +34,7 @@ export default function Page() {
   return (
     <div className="flex justify-center items-center h-screen bg-white p-4">
       <div className="rounded w-full max-w-md">
-        <h1 className="text-2xl font-bold mb-5 text-center">
+        <h1 className="text-2xl font-bold mb-5 text-center text-black">
           Bienvenido de nuevo
         </h1>
         <form onSubmit={handleSubmit}>
