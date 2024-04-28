@@ -34,7 +34,7 @@ export default function Page() {
   return (
     <div className="flex justify-center items-center h-screen bg-white p-4">
       <div className="rounded w-full max-w-md">
-        <h1 className="text-2xl font-bold mb-5 text-center text-black">
+        <h1 className="text-3xl font-bold mb-10 text-center text-black">
           Crear una cuenta
         </h1>
         <form onSubmit={handleSubmit}>
@@ -60,7 +60,7 @@ export default function Page() {
           </div>
           <button
             type="submit"
-            className="w-full bg-yellow-fitnesspark text-black font-bold py-3 px-4 rounded focus:outline-none focus:shadow-outline"
+            className="w-full bg-yellow-fitnesspark text-gray-fitnesspark font-semibold py-4 px-5 rounded focus:outline-none focus:shadow-outline"
           >
             Continuar
           </button>
