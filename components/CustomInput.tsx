@@ -1,21 +1,17 @@
-import React, { useState, InputHTMLAttributes } from "react";
+import React, { useState } from "react";
 
-interface CustomInputProps extends InputHTMLAttributes<HTMLInputElement> {
+interface CustomInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
-  name: string;
   bgColor: string;
   error?: string;
 }
 
-const CustomInput = ({
+export default function CustomInput({
   label,
-  name,
-  type = "text",
   bgColor,
   error,
-  onChange,
   ...rest
-}: CustomInputProps) => {
+}: CustomInputProps) {
   const [focus, setFocus] = useState(false);
   const [value, setValue] = useState(rest.value || "");
 
@@ -27,32 +23,27 @@ const CustomInput = ({
   };
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setValue(event.target.value);
-    if (onChange) {
-      onChange(event);
+    if (rest.onChange) {
+      rest.onChange(event);
     }
   };
 
   return (
     <div
-      className={`relative border rounded border-yellow-fitnesspark ${
-        error ? "border-red-500" : ""
+      className={`relative border rounded ${bgColor} ${
+        error ? "border-red-500" : "border-yellow-fitnesspark"
       }`}
     >
       <input
-        id={name}
-        name={name}
-        type={type}
+        {...rest}
         value={value}
         onChange={handleChange}
         onFocus={handleFocus}
         onBlur={handleBlur}
-        className="appearance-none bg-transparent w-full text-gray-700 focus:outline-none py-3 pl-4"
-        aria-label={label}
-        {...rest}
-        required
+        className={`appearance-none bg-transparent w-full text-gray-700 focus:outline-none py-3 pl-4 ${rest.className}`}
       />
       <label
-        htmlFor={name}
+        htmlFor={rest.name}
         className={`absolute top-0 left-0 px-1 transition-all ease-in-out duration-300 ${
           focus || value
             ? `text-xs transform -translate-y-3.5 translate-x-3 text-yellow-fitnesspark ${bgColor}`
@@ -65,6 +56,4 @@ const CustomInput = ({
       {error && <p className="text-red-500 text-xs italic">{error}</p>}
     </div>
   );
-};
-
-export default CustomInput;
+}

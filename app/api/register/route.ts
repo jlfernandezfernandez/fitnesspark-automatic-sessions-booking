@@ -7,13 +7,11 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { email, password } = body;
 
-    console.log(email, password);
-
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
     const { rows } =
-      await sql`INSERT INTO users(email, password_hash) VALUES(${email}, ${hashedPassword}) RETURNING *;`;
+      await sql`INSERT INTO users(email, password_hash) VALUES(${email}, ${hashedPassword}) RETURNING email;`; // Asumimos que devolvemos el id y el email
 
     return NextResponse.json({ user: rows[0] }, { status: 201 });
   } catch (error) {
