@@ -1,9 +1,15 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import UserForm from "@/components/UserForm";
+import { useRouter } from "next/navigation";
+import { useUser } from "@/providers/UserContext";
 
 export default function LoginPage() {
+  const [error, setError] = useState<string>("");
+  const { login } = useUser();
+  const router = useRouter();
+
   const handleLogin = async (email: string, password: string) => {
     try {
       const response = await fetch("/api/login", {
@@ -15,12 +21,19 @@ export default function LoginPage() {
       });
 
       if (!response.ok) {
-        throw new Error("Something went wrong");
+        const result = await response.json();
+        if (response.status === 404) {
+          setError("El usuario no existe.");
+          return;
+        }
+        throw new Error(result.error || "Algo ha salido mal.");
       }
+
       const result = await response.json();
-      console.log(result);
+      login({ email: result.user.email });
+      router.push("/profile");
     } catch (error) {
-      console.error("Failed to login:", error);
+      setError("Algo ha salido mal.");
     }
   };
 
@@ -29,6 +42,7 @@ export default function LoginPage() {
       onSubmit={handleLogin}
       formTitle="Bienvenido de nuevo"
       submitButtonLabel="Continuar"
+      error={error}
     />
   );
 }

@@ -2,17 +2,22 @@
 
 import React, { useState } from "react";
 import CustomInput from "@/components/CustomInput";
+import Link from "next/link";
 
 interface UserFormProps {
   onSubmit: (email: string, password: string) => void;
   formTitle: string;
   submitButtonLabel: string;
+  error?: string;
+  isRegisterForm?: boolean;
 }
 
 export default function UserForm({
   onSubmit,
   formTitle,
   submitButtonLabel,
+  error,
+  isRegisterForm = false,
 }: UserFormProps) {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
@@ -23,7 +28,7 @@ export default function UserForm({
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-white p-4">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-white p-4">
       <div className="rounded w-full max-w-md">
         <h1 className="text-3xl font-bold mb-6 text-center text-black">
           {formTitle}
@@ -36,10 +41,14 @@ export default function UserForm({
               type="email"
               bgColor="bg-white"
               value={email}
+              inputMode="email"
+              autoFocus
+              autoComplete="email"
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 setEmail(e.target.value)
               }
             />
+            {error && <p className="text-red-500 text-sm mt-2">🔺 {error}</p>}
           </div>
           <div className="my-2">
             <CustomInput
@@ -48,11 +57,22 @@ export default function UserForm({
               type="password"
               bgColor="bg-white"
               value={password}
+              autoComplete={
+                isRegisterForm ? "new-password" : "current-password"
+              }
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 setPassword(e.target.value)
               }
             />
           </div>
+          {isRegisterForm && (
+            <p className="mt-4 text-center text-sm text-gray-600">
+              ¿Ya tienes una cuenta?{" "}
+              <Link href="/login" className="text-blue-500 hover:text-blue-600">
+                Iniciar sesión
+              </Link>
+            </p>
+          )}
           <button
             type="submit"
             className="mt-6 w-full bg-yellow-fitnesspark text-black font-bold py-3 px-4 rounded focus:outline-none focus:shadow-outline"

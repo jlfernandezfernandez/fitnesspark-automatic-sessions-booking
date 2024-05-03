@@ -17,7 +17,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={plusJakartaSNS.className}>
+      <body className={`${plusJakartaSNS.className} bg-white`}>
         <UserProvider>{children}</UserProvider>
       </body>
     </html>
