@@ -12,6 +12,9 @@ export default function ProfilePage() {
         {user ? (
           <>
             <h1 className="text-2xl font-bold">Bienvenido, {user.email}</h1>
+            <h2 className="text-lg font-semibold mt-2">
+              {user.isLinked ? "Conectado con FitnessPark" : "No conectado"}
+            </h2>
             <button
               className="mt-4 px-4 py-2 rounded border-black text-black border"
               onClick={logout}

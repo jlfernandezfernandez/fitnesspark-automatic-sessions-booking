@@ -30,7 +30,7 @@ export default function LoginPage() {
       }
 
       const result = await response.json();
-      login({ email: result.user.email });
+      login({ email: result.user.email, isLinked: result.user.isLinked });
       router.push("/profile");
     } catch (error) {
       setError("Algo ha salido mal.");

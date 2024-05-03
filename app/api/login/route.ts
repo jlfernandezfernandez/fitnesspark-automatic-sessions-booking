@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 import { sql } from "@vercel/postgres";
+import loginToFitnessPark from "@/domain/FitnessParkLink";
 
 export async function POST(request: Request) {
   try {
@@ -22,8 +23,20 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
+    var isLinked = false;
+    if (user.fitnesspark_email && user.fitnesspark_password) {
+      isLinked = await loginToFitnessPark(
+        user.fitnesspark_email,
+        //decript password
+        user.fitnesspark_password
+      );
+    }
+
     return NextResponse.json(
-      { message: "Login successful", user: { email: user.email } },
+      {
+        message: "Login successful",
+        user: { email: user.email, isLinked: isLinked },
+      },
       { status: 200 }
     );
   } catch (error) {
