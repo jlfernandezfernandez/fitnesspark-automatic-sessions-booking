@@ -30,7 +30,7 @@ export default function RegisterPage() {
       }
 
       const result = await response.json();
-      login({ email: result.user.email });
+      login({ ...result.user });
       router.push("/profile");
     } catch (error: any) {
       setError(error.message || "Algo ha salido mal.");
