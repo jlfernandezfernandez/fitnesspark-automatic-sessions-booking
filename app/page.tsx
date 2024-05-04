@@ -18,7 +18,12 @@ export default function Home() {
           </p>
         </div>
       </div>
-      <div className="flex-1 w-full md:w-1/2 lg:w-1/3 bg-white flex flex-col items-center justify-center p-4">
+      <div className="flex-1 w-full md:w-1/2 lg:w-1/3 bg-white flex flex-col items-center justify-center p-4 relative">
+        <div className="flex md:hidden flex-col font-cactus absolute top-0 left-0 m-8 justify-center">
+          <span className="text-3xl font-bold italic animate-text bg-gradient-to-r from-teal-500 via-purple-500 to-orange-500 bg-clip-text text-transparent">
+            Autobooking
+          </span>
+        </div>
         <p className="text-3xl mb-4 font-bold text-black/75">Empieza ahora</p>
         <div className="w-full px-10 flex flex-col md:flex-row md:space-x-2 text-center">
           <Link
