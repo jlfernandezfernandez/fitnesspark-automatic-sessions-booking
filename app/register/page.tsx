@@ -38,7 +38,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <div>
+    <div className="flex min-h-screen items-center justify-center bg-white">
       <UserForm
         onSubmit={handleRegister}
         formTitle="Crear una cuenta"

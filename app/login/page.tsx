@@ -38,11 +38,13 @@ export default function LoginPage() {
   };
 
   return (
-    <UserForm
-      onSubmit={handleLogin}
-      formTitle="Bienvenido de nuevo"
-      submitButtonLabel="Continuar"
-      error={error}
-    />
+    <div className="flex min-h-screen items-center justify-center bg-white">
+      <UserForm
+        onSubmit={handleLogin}
+        formTitle="Bienvenido de nuevo"
+        submitButtonLabel="Continuar"
+        error={error}
+      />
+    </div>
   );
 }
