@@ -8,7 +8,7 @@ import loginToFitnessPark from "@/domain/FitnessParkLink";
 import Footer from "@/components/Footer";
 
 export default function ProfilePage() {
-  const { user, logout } = useUser();
+  const { user, logout, setIsLinked } = useUser();
   const [isModalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
@@ -20,7 +20,7 @@ export default function ProfilePage() {
       const isLinked = await loginToFitnessPark(email, password);
       if (isLinked) {
         setModalOpen(false);
-        // Actualizar el estado isLinked del usuario según la respuesta de la API
+        setIsLinked(true);
       } else {
         throw new Error("No se pudo vincular la cuenta");
       }

@@ -13,7 +13,6 @@ import { parseCookies, setCookie, destroyCookie } from "nookies";
 
 interface UserContextType {
   user: UserProps | undefined;
-  isLinked: boolean;
   login: (userData: UserProps) => void;
   logout: () => void;
   setIsLinked: (isLinked: boolean) => void;
@@ -21,7 +20,6 @@ interface UserContextType {
 
 const defaultContext: UserContextType = {
   user: undefined,
-  isLinked: false,
   login: () => {},
   logout: () => {},
   setIsLinked: () => {},
@@ -33,7 +31,6 @@ export const useUser = () => useContext(UserContext);
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<UserProps | undefined>();
-  const [isLinked, setIsLinked] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -56,15 +53,18 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
   function logout() {
     setUser(undefined);
-    setIsLinked(false);
     destroyCookie(null, "sessionUser");
     router.push("/");
   }
 
+  function setIsLinked(isLinked: boolean) {
+    if (user) {
+      setUser({ ...user, isLinked });
+    }
+  }
+
   return (
-    <UserContext.Provider
-      value={{ user, isLinked, login, logout, setIsLinked }}
-    >
+    <UserContext.Provider value={{ user, login, logout, setIsLinked }}>
       {children}
     </UserContext.Provider>
   );
