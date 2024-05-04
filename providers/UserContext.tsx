@@ -7,7 +7,7 @@ import React, {
   useEffect,
   ReactNode,
 } from "react";
-import { UserProps } from "@/user/UserData";
+import { UserProps } from "@/model/UserData";
 import { useRouter } from "next/navigation";
 import { parseCookies, setCookie, destroyCookie } from "nookies";
 
@@ -15,14 +15,14 @@ interface UserContextType {
   user: UserProps | undefined;
   login: (userData: UserProps) => void;
   logout: () => void;
-  setIsLinked: (isLinked: boolean) => void;
+  updateUserData: (userData: UserProps) => void;
 }
 
 const defaultContext: UserContextType = {
   user: undefined,
   login: () => {},
   logout: () => {},
-  setIsLinked: () => {},
+  updateUserData: () => {},
 };
 
 export const UserContext = createContext<UserContextType>(defaultContext);
@@ -57,14 +57,23 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     router.push("/");
   }
 
-  function setIsLinked(isLinked: boolean) {
-    if (user) {
-      setUser({ ...user, isLinked });
-    }
+  function updateUserData(userData: UserProps) {
+    setUser(userData);
+    setCookie(null, "sessionUser", JSON.stringify(userData), {
+      maxAge: 30 * 24 * 60 * 60, // 30 days
+      path: "/",
+    });
   }
 
   return (
-    <UserContext.Provider value={{ user, login, logout, setIsLinked }}>
+    <UserContext.Provider
+      value={{
+        user,
+        login,
+        logout,
+        updateUserData,
+      }}
+    >
       {children}
     </UserContext.Provider>
   );

@@ -21,20 +21,23 @@ export default function RegisterPage() {
       });
 
       if (!response.ok) {
-        const result = await response.json();
         if (response.status === 400) {
           setError("El usuario ya existe.");
           return;
         }
-        throw new Error(result.error || "Algo ha salido mal.");
+        throw new Error("Algo ha salido mal.");
       }
 
-      const result = await response.json();
-      login({ ...result.user });
-      router.push("/profile");
+      const userData = await response.json();
+      handleSuccessfulRegister(userData);
     } catch (error: any) {
       setError(error.message || "Algo ha salido mal.");
     }
+  };
+
+  const handleSuccessfulRegister = (userData: any) => {
+    login({ ...userData.user });
+    router.push("/profile");
   };
 
   return (

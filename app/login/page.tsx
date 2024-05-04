@@ -12,29 +12,46 @@ export default function LoginPage() {
 
   const handleLogin = async (email: string, password: string) => {
     try {
-      const response = await fetch("/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
+      const response = await loginRequest(email, password);
 
       if (!response.ok) {
-        const result = await response.json();
-        if (response.status === 404) {
-          setError("El usuario no existe.");
-          return;
-        }
-        throw new Error(result.error || "Algo ha salido mal.");
+        handleError(response);
+        return;
       }
 
-      const result = await response.json();
-      login({ email: result.user.email, isLinked: result.user.isLinked });
-      router.push("/profile");
+      const userData = await response.json();
+      handleSuccessfulLogin(userData);
     } catch (error) {
-      setError("Algo ha salido mal.");
+      handleLoginError();
     }
+  };
+
+  const loginRequest = async (email: string, password: string) => {
+    return await fetch("/api/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    });
+  };
+
+  const handleError = async (response: Response) => {
+    if (response.status === 404) {
+      setError("El usuario no existe.");
+    } else {
+      const result = await response.json();
+      throw new Error(result.error || "Algo ha salido mal.");
+    }
+  };
+
+  const handleSuccessfulLogin = (userData: any) => {
+    login({ ...userData.user });
+    router.push("/profile");
+  };
+
+  const handleLoginError = () => {
+    setError("Algo ha salido mal.");
   };
 
   return (

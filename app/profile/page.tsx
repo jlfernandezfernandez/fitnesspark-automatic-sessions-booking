@@ -4,29 +4,83 @@ import React, { useState, useEffect } from "react";
 import { useUser } from "@/providers/UserContext";
 import UserForm from "@/components/UserForm";
 import Modal from "@/components/Modal";
-import loginToFitnessPark from "@/domain/FitnessParkLink";
 import Footer from "@/components/Footer";
+import {
+  checkFitnessParkLink,
+  loginToFitnessPark,
+} from "@/services/FitnessParkService";
+import { UserProps } from "@/model/UserData";
 
 export default function ProfilePage() {
   const [error, setError] = useState<string>("");
-  const { user, logout, setIsLinked } = useUser();
+  const { user, logout, updateUserData } = useUser();
   const [isModalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     setModalOpen(!!user && !user.isLinked);
   }, [user]);
 
-  const handleLinkFitnessPark = async (email: string, password: string) => {
+  useEffect(() => {
+    if (user) {
+      checkFitnessParkLink(user).then((isLinked) => {
+        updateUserData({ ...user, isLinked: isLinked });
+      });
+    }
+  }, []);
+
+  const handleLinkFitnessPark = async (
+    fitnesspark_email: string,
+    fitnesspark_password: string
+  ) => {
     try {
-      const isLinked = await loginToFitnessPark(email, password);
+      const isLinked = await loginToFitnessPark(
+        fitnesspark_email,
+        fitnesspark_password
+      );
       if (isLinked) {
-        setModalOpen(false);
-        setIsLinked(true);
+        handleSuccessfulLink(fitnesspark_email, fitnesspark_password);
       } else {
         setError("Revisa las credenciales.");
       }
     } catch (error) {
       setError("Algo ha salido mal.");
+    }
+  };
+
+  const handleSuccessfulLink = async (
+    fitnesspark_email: string,
+    fitnesspark_password: string
+  ) => {
+    if (user) {
+      try {
+        const newUserData = {
+          ...user,
+          isLinked: true,
+          fitnesspark_email,
+          fitnesspark_password,
+        };
+        updateUserData(newUserData);
+        updateUserOnServer(newUserData);
+        setModalOpen(false);
+      } catch (error) {
+        setError("No se pudo actualizar el usuario.");
+      }
+    }
+  };
+
+  const updateUserOnServer = async (newUserData: UserProps) => {
+    const response = await fetch("/api/user", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        newUserData,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to update user");
     }
   };
 
