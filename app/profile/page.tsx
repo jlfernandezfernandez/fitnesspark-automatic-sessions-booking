@@ -8,6 +8,7 @@ import loginToFitnessPark from "@/domain/FitnessParkLink";
 import Footer from "@/components/Footer";
 
 export default function ProfilePage() {
+  const [error, setError] = useState<string>("");
   const { user, logout, setIsLinked } = useUser();
   const [isModalOpen, setModalOpen] = useState(false);
 
@@ -22,10 +23,10 @@ export default function ProfilePage() {
         setModalOpen(false);
         setIsLinked(true);
       } else {
-        throw new Error("No se pudo vincular la cuenta");
+        setError("Revisa las credenciales.");
       }
     } catch (error) {
-      console.error("Error al vincular la cuenta:", error);
+      setError("Algo ha salido mal.");
     }
   };
 
@@ -49,6 +50,7 @@ export default function ProfilePage() {
                 onSubmit={handleLinkFitnessPark}
                 formTitle="Vincula tu cuenta de FitnessPark"
                 submitButtonLabel="Conectar"
+                error={error}
               />
             </Modal>
           </div>
