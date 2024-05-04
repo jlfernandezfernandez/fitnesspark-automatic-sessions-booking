@@ -32,13 +32,10 @@ export default function ProfilePage() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <div className="flex flex-grow justify-center items-center">
+      <div className="flex flex-grow justify-center items-center p-4 mb-2 text-center">
         {user ? (
           <div>
             <h1 className="text-2xl font-bold">Bienvenido, {user.email}</h1>
-            <h2 className="text-lg font-semibold mt-2">
-              {user.isLinked ? "Conectado con FitnessPark" : "No conectado"}
-            </h2>
             <button
               className="mt-4 px-4 py-2 rounded border border-gray-300 shadow-sm hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200"
               onClick={logout}
