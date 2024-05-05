@@ -17,16 +17,13 @@ export default function ProfilePage() {
   const [isModalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
-    setModalOpen(!!user && !user.isLinked);
-  }, [user]);
-
-  useEffect(() => {
     if (user) {
       checkFitnessParkLink(user).then((isLinked) => {
+        setModalOpen(!isLinked);
         updateUserData({ ...user, isLinked: isLinked });
       });
     }
-  }, []);
+  }, [user?.isLinked]);
 
   const handleLinkFitnessPark = async (
     fitnesspark_email: string,
@@ -106,21 +103,23 @@ export default function ProfilePage() {
             </Modal>
           </div>
         ) : (
-          <p>No hay usuario conectado.</p>
+          <p>Cargando...</p>
         )}
       </div>
       <Footer>
-        <h2>
-          {user && user.isLinked ? (
-            <span className="text-green-600">
-              🟢 Conectado con Fitness Park
-            </span>
-          ) : (
-            <span className="text-red-600">
-              🔴 Desconectado de Fitness Park
-            </span>
-          )}
-        </h2>
+        {user && (
+          <h2>
+            {user.isLinked ? (
+              <span className="text-green-600">
+                🟢 Conectado con Fitness Park
+              </span>
+            ) : (
+              <span className="text-red-600">
+                🔴 Desconectado de Fitness Park
+              </span>
+            )}
+          </h2>
+        )}
       </Footer>
     </div>
   );

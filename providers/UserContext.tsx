@@ -39,7 +39,8 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
     if (sessionUser) {
       setUser(JSON.parse(sessionUser));
-      router.push("/profile");
+    } else {
+      router.push("/login");
     }
   }, []);
 
@@ -57,11 +58,16 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     router.push("/");
   }
 
-  function updateUserData(userData: UserProps) {
-    setUser(userData);
-    setCookie(null, "sessionUser", JSON.stringify(userData), {
-      maxAge: 30 * 24 * 60 * 60, // 30 days
-      path: "/",
+  function updateUserData(userData: Partial<UserProps>) {
+    setUser((prevUser) => {
+      if (!prevUser) {
+        return userData as UserProps;
+      } else {
+        return {
+          ...prevUser,
+          ...userData,
+        };
+      }
     });
   }
 
