@@ -12,32 +12,44 @@ export default function RegisterPage() {
 
   const handleRegister = async (email: string, password: string) => {
     try {
-      const response = await fetch("/api/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
+      const response = await registerRequest(email, password);
 
       if (!response.ok) {
-        if (response.status === 400) {
-          setError("El usuario ya existe.");
-          return;
-        }
-        throw new Error("Algo ha salido mal.");
+        handleError(response);
       }
 
       const userData = await response.json();
       handleSuccessfulRegister(userData);
     } catch (error: any) {
-      setError(error.message || "Algo ha salido mal.");
+      handleRegisterError();
+    }
+  };
+
+  const registerRequest = async (email: string, password: string) => {
+    return await fetch("/api/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    });
+  };
+
+  const handleError = async (response: Response) => {
+    if (response.status === 400) {
+      setError("Usuario no encontrado.");
+    } else {
+      setError("Algo ha salido mal.");
     }
   };
 
   const handleSuccessfulRegister = (userData: any) => {
     login({ ...userData.user });
     router.push("/profile");
+  };
+
+  const handleRegisterError = () => {
+    setError("Algo ha salido mal.");
   };
 
   return (

@@ -16,7 +16,6 @@ export default function LoginPage() {
 
       if (!response.ok) {
         handleError(response);
-        return;
       }
 
       const userData = await response.json();
@@ -37,11 +36,10 @@ export default function LoginPage() {
   };
 
   const handleError = async (response: Response) => {
-    if (response.status === 404) {
-      setError("El usuario no existe.");
+    if (response.status === 400) {
+      setError("Usuario no encontrado.");
     } else {
-      const result = await response.json();
-      throw new Error(result.error || "Algo ha salido mal.");
+      setError("Algo ha salido mal.");
     }
   };
 

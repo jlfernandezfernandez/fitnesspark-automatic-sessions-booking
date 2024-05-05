@@ -32,7 +32,7 @@ export async function login(email: string, password: string) {
     const passwordIsValid = await bcrypt.compare(password, user.password_hash);
 
     if (!passwordIsValid) {
-      return { error: "Invalid credentials", status: 401 };
+      return { error: "User not found", status: 404 };
     }
 
     return {
