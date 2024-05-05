@@ -37,7 +37,7 @@ export default function RegisterPage() {
   };
 
   const handleError = async (response: Response) => {
-    if (response.status === 400) {
+    if (response.status === 404) {
       setError("Usuario no encontrado.");
     } else {
       setError("Algo ha salido mal.");
