@@ -16,6 +16,7 @@ export default function RegisterPage() {
 
       if (!response.ok) {
         handleError(response);
+        return;
       }
 
       const userData = await response.json();
@@ -44,8 +45,10 @@ export default function RegisterPage() {
   };
 
   const handleSuccessfulRegister = (userData: any) => {
-    login({ ...userData.user });
-    router.push("/profile");
+    if (!userData.user) {
+      login({ ...userData.user });
+      router.push("/profile");
+    }
   };
 
   const handleRegisterError = () => {
