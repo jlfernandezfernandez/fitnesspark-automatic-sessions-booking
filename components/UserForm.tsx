@@ -37,6 +37,7 @@ export default function UserForm({
           type="email"
           bgColor="bg-white"
           value={email}
+          required
           inputMode="email"
           autoFocus
           autoComplete="email"
@@ -51,6 +52,7 @@ export default function UserForm({
           type="password"
           bgColor="bg-white"
           value={password}
+          required
           autoComplete={isRegisterForm ? "new-password" : "current-password"}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
             setPassword(e.target.value)
