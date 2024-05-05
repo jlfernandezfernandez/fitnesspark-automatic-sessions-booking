@@ -40,7 +40,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     if (sessionUser) {
       setUser(JSON.parse(sessionUser));
     } else {
-      router.push("/login");
+      router.push("/");
     }
   }, []);
 
