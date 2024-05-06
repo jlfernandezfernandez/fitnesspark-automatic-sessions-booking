@@ -45,7 +45,7 @@ export default function RegisterPage() {
   };
 
   const handleSuccessfulRegister = (userData: any) => {
-    if (!userData.user) {
+    if (userData.user) {
       login({ ...userData.user });
       router.push("/profile");
     }

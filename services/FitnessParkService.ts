@@ -63,7 +63,7 @@ export async function updateUserFitnessParkLink(
     await sql`
         UPDATE users
         SET is_linked_with_fitnesspark = ${isLinked}
-        WHERE user_id = ${userId};
+        WHERE user_id = ${userId} and is_active = true;
       `;
   } catch (error) {
     console.error("Error updating user Fitness Park link:", error);

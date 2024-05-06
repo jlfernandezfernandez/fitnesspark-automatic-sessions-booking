@@ -114,3 +114,30 @@ export async function updateUser(newUserData: Partial<UserProps>) {
     return { error: "Failed to update user", status: 500 };
   }
 }
+
+export async function deactivateAccount(userId: number) {
+  try {
+    const existingUserQuery = await sql`
+      SELECT * FROM users WHERE user_id = ${userId} and is_active = true;
+    `;
+
+    if (existingUserQuery.rows.length === 0) {
+      return { error: "User not found", status: 404 };
+    }
+
+    await sql`
+      UPDATE users
+      SET 
+        is_active = false,
+        is_linked_with_fitnesspark = false,
+        fitnesspark_email = NULL,
+        fitnesspark_password = NULL
+      WHERE user_id = ${userId};
+    `;
+
+    return { message: "Account deactivated successfully", status: 200 };
+  } catch (error) {
+    console.error("Deactivate account error:", error);
+    return { error: "Failed to deactivate account", status: 500 };
+  }
+}

@@ -63,10 +63,15 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       if (!prevUser) {
         return userData as UserProps;
       } else {
-        return {
+        const newUser = {
           ...prevUser,
           ...userData,
         };
+        setCookie(null, "sessionUser", JSON.stringify(newUser), {
+          maxAge: 30 * 24 * 60 * 60,
+          path: "/",
+        });
+        return newUser;
       }
     });
   }
