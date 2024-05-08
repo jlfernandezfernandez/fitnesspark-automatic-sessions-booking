@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { UserProvider } from "@/providers/UserContext";
 import { Analytics } from "@vercel/analytics/react";
 
-const plusJakartaSNS = Plus_Jakarta_Sans({ subsets: ["latin"] });
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-inter",
+});
 
 export const metadata: Metadata = {
   title: "Autobooking for Fitness Park",
@@ -18,7 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${plusJakartaSNS.className} bg-white text-black`}>
+      <body className={`${inter.variable}`}>
         <UserProvider>
           {children}
           <Analytics />

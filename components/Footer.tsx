@@ -1,14 +1,20 @@
 import React from "react";
 
 interface FooterProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
+  isLinked?: boolean;
 }
 
-export default function Footer({ children }: FooterProps) {
+export default function Footer({ children, isLinked }: FooterProps) {
   return (
     <footer className="border-t bg-white text-gray-500 py-3 px-4">
-      <nav className="flex items-center justify-between max-w-3xl mx-auto space-x-4 text-sm">
+      <nav className="flex items-center justify-between mx-auto space-x-4 text-sm">
         {children}
+        {isLinked ? (
+          <span className="text-green-600">🟢 Conectado con Fitness Park</span>
+        ) : (
+          <span className="text-red-600">🔴 Desconectado de Fitness Park</span>
+        )}
         <span style={{ marginLeft: "auto" }}>2024</span>
       </nav>
     </footer>
