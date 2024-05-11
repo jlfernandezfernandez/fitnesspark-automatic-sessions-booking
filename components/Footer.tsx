@@ -7,7 +7,7 @@ interface FooterProps {
 
 export default function Footer({ children, isLinked }: FooterProps) {
   return (
-    <footer className="border-t bg-white text-gray-500 py-3 px-4">
+    <footer className="border-t bg-white text-gray-500 py-5 px-4">
       <nav className="flex items-center justify-between mx-auto space-x-4 text-sm">
         {children}
         {isLinked ? (
