@@ -45,11 +45,11 @@ const DayColumn: React.FC<DayColumnProps> = ({ day }) => {
           {isMenuOpen && (
             <DropdownMenuContent>
               <DropdownMenuItem>
-                <div className="flex flex-col">
-                  <Input placeholder="Sesión" />
-                  <Input placeholder="Hora" />
-                  <Button>Añadir</Button>
-                </div>
+                <form className="flex flex-col">
+                  <Input className="mt-2" placeholder="Sesión" />
+                  <Input className="mt-1" placeholder="Hora" />
+                  <Button className="my-2">Añadir</Button>
+                </form>
               </DropdownMenuItem>
             </DropdownMenuContent>
           )}
