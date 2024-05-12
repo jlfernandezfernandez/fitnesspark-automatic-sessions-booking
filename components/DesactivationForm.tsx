@@ -22,7 +22,7 @@ export default function DeactivationForm({
   };
 
   return (
-    <div className="mx-auto max-w-md bg-white p-4">
+    <div className="mx-auto max-w-md bg-white dark:bg-gray-800 dark:text-white p-4">
       <h1 className="text-2xl font-bold mb-6 text-center text-black">
         {formTitle}
       </h1>

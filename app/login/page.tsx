@@ -56,7 +56,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-white">
+    <div className="flex min-h-screen items-center justify-center bg-white dark:bg-gray-800 dark:text-white">
       <UserForm
         onSubmit={handleLogin}
         formTitle="Bienvenido de nuevo"

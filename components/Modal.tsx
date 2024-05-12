@@ -25,7 +25,7 @@ export default function Modal({
         className="fixed inset-0 bg-black opacity-50"
         onClick={closeButtonActive ? handleClose : undefined}
       ></div>
-      <div className="relative bg-white rounded-lg shadow-lg p-6 max-w-lg w-full">
+      <div className="relative bg-white dark:bg-gray-800 dark:text-white rounded-lg shadow-lg p-6 max-w-lg w-full">
         {children}
         {closeButtonActive && (
           <button

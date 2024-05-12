@@ -123,7 +123,7 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-100 w-full">
+    <div className="flex flex-col min-h-screen bg-gray-100 dark:bg-gray-800 dark:text-white w-full">
       {user ? (
         <div className="flex flex-col flex-grow w-full px-4">
           <header className="flex items-center justify-between py-4 mb-4">

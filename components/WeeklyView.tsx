@@ -47,14 +47,12 @@ export default function WeeklyView({
   ];
 
   return (
-    <div className="flex flex-col items-center justify-center w-full h-full bg-white rounded-lg shadow-lg">
-      <div className="w-full p-4 dark:bg-gray-900">
-        <h2 className="text-xl font-semibold dark:text-white">
-          Planning Semanal
-        </h2>
+    <div className="flex flex-col items-center justify-center w-full h-full bg-white dark:bg-gray-800 dark:text-white rounded-xl shadow-xl">
+      <div className="w-full p-4 dark:bg-gray-800">
+        <h2 className="text-xl font-semibold">Planning Semanal</h2>
       </div>
       <div className="w-full h-full overflow-x-auto">
-        <div className="flex space-x-4 justify-center min-w-max mx-auto dark:bg-gray-900 h-full p-4">
+        <div className="flex space-x-4 justify-center min-w-max mx-auto h-full p-4">
           {daysOfWeek.map((day, index) => (
             <DayColumn key={index} day={day} userId={userId} />
           ))}

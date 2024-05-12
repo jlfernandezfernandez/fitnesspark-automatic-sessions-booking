@@ -26,16 +26,14 @@ export default function UserForm({
   };
 
   return (
-    <div className="mx-auto max-w-md bg-white p-4">
-      <h1 className="text-3xl font-bold mb-6 text-center text-black">
-        {formTitle}
-      </h1>
+    <div className="mx-auto max-w-md bg-white dark:bg-gray-800 dark:text-white text-black p-4">
+      <h1 className="text-3xl font-bold mb-6 text-center ">{formTitle}</h1>
       <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
         <CustomInput
           label="Email"
           name="email"
           type="email"
-          bgColor="bg-white"
+          bgColor="bg-white dark:bg-gray-800"
           value={email}
           required
           inputMode="email"
@@ -50,7 +48,7 @@ export default function UserForm({
           label="Password"
           name="password"
           type="password"
-          bgColor="bg-white"
+          bgColor="bg-white dark:bg-gray-800"
           value={password}
           required
           autoComplete={isRegisterForm ? "new-password" : "current-password"}
@@ -59,7 +57,7 @@ export default function UserForm({
           }
         />
         {isRegisterForm && (
-          <p className="text-center text-sm text-gray-600">
+          <p className="text-center text-sm dark:text-white text-gray-600">
             ¿Ya tienes una cuenta?{" "}
             <Link href="/login" className="text-blue-500 hover:text-blue-600">
               Iniciar sesión

@@ -30,7 +30,7 @@ export default function CustomInput({
 
   return (
     <div
-      className={`relative border rounded ${bgColor} ${
+      className={`relative border rounded ${bgColor} dark:text-white ${
         error ? "border-red-500" : "border-yellow-fitnesspark"
       }`}
     >
@@ -41,14 +41,14 @@ export default function CustomInput({
         onChange={handleChange}
         onFocus={handleFocus}
         onBlur={handleBlur}
-        className={`appearance-none bg-transparent w-full text-gray-700 focus:outline-none py-3 px-4 ${rest.className}`}
+        className={`appearance-none bg-transparent w-full dark:text-white text-gray-70  focus:outline-none py-3 px-4 ${rest.className}`}
       />
       <label
         htmlFor={rest.name}
         className={`absolute top-0 left-0 px-1 transition-all ease-in-out duration-300 ${
           focus || value
             ? `text-xs transform -translate-y-3.5 translate-x-3 text-yellow-fitnesspark ${bgColor}`
-            : "text-base text-gray-500 pl-5 pt-1"
+            : "text-base dark:text-white text-gray-500 pl-5 pt-1"
         }`}
         style={{ top: "6px" }}
       >
