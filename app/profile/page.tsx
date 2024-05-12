@@ -15,7 +15,7 @@ import { UserProps } from "@/model/UserData";
 
 export default function ProfilePage() {
   const [error, setError] = useState<string>("");
-  const { user, logout, updateUserData } = useUser();
+  const { user, logout, updateUserData, reservations } = useUser();
   const [isModalOpen, setModalOpen] = useState(false);
   const [isConfirmationModalOpen, setConfirmationModalOpen] = useState(false);
 
@@ -125,8 +125,8 @@ export default function ProfilePage() {
   return (
     <div className="flex flex-col min-h-screen bg-gray-100 w-full">
       {user ? (
-        <div className="flex flex-col flex-grow w-full">
-          <header className="flex items-center justify-between px-4 py-4 mb-4">
+        <div className="flex flex-col flex-grow w-full px-4">
+          <header className="flex items-center justify-between py-4 mb-4">
             <h1 className="m-2 flex-grow text-gray-400">
               <span className="text-3xl md:text-5xl font-bold italic animate-text bg-gradient-to-r from-teal-500 via-purple-500 to-orange-500 bg-clip-text text-transparent pr-2">
                 Autobooking
@@ -139,10 +139,8 @@ export default function ProfilePage() {
               Desconectar
             </button>
           </header>
-          <div className="flex-grow flex items-center justify-center px-4">
-            <WeeklyView
-              sessions={{ mon: [], tue: [], wed: [], thu: [], fri: [] }}
-            />
+          <div className="flex-grow flex items-center justify-center">
+            <WeeklyView reservations={reservations} userId={user.id} />
           </div>
           <Modal isOpen={isModalOpen}>
             <UserForm

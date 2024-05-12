@@ -20,7 +20,7 @@ export default function Modal({
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center text-center z-50 overflow-y-auto">
+    <div className="fixed inset-0 flex items-center justify-center text-center z-50 overflow-y-auto px-2">
       <div
         className="fixed inset-0 bg-black opacity-50"
         onClick={closeButtonActive ? handleClose : undefined}

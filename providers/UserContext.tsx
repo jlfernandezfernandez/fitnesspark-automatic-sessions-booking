@@ -9,20 +9,35 @@ import React, {
 } from "react";
 import { UserProps } from "@/model/UserData";
 import { useRouter } from "next/navigation";
-import { parseCookies, setCookie, destroyCookie } from "nookies";
+import { destroyCookie, parseCookies, setCookie } from "nookies";
+import { getAllReservations } from "@/services/ReservationService";
+
+interface Reservation {
+  id: number;
+  userId: number;
+  dayOfWeek: string;
+  activity: string;
+  time: string;
+}
 
 interface UserContextType {
   user: UserProps | undefined;
+  reservations: Reservation[];
   login: (userData: UserProps) => void;
   logout: () => void;
   updateUserData: (userData: UserProps) => void;
+  removeFromReservations: (reservationId: number) => void;
+  addToReservations: (newReservation: Reservation) => void;
 }
 
 const defaultContext: UserContextType = {
   user: undefined,
+  reservations: [],
   login: () => {},
   logout: () => {},
   updateUserData: () => {},
+  removeFromReservations: () => {},
+  addToReservations: () => {},
 };
 
 export const UserContext = createContext<UserContextType>(defaultContext);
@@ -31,21 +46,36 @@ export const useUser = () => useContext(UserContext);
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<UserProps | undefined>();
+  const [reservations, setReservations] = useState<Reservation[]>([]);
   const router = useRouter();
 
   useEffect(() => {
-    const cookies = parseCookies();
-    const sessionUser = cookies.sessionUser;
+    const fetchData = async () => {
+      const cookies = parseCookies();
+      const sessionUser = cookies.sessionUser;
 
-    if (sessionUser) {
-      setUser(JSON.parse(sessionUser));
-    } else {
-      router.push("/");
-    }
+      if (sessionUser) {
+        const userData = JSON.parse(sessionUser);
+        setUser(userData);
+        getReservations(userData.id);
+      } else {
+        router.push("/");
+      }
+    };
+
+    fetchData();
   }, []);
+
+  async function getReservations(userId: number) {
+    const { reservations, status } = await getAllReservations(userId);
+    if (status === 200) {
+      setReservations(reservations);
+    }
+  }
 
   function login(userData: UserProps) {
     setUser(userData);
+    getReservations(userData.id);
     setCookie(null, "sessionUser", JSON.stringify(userData), {
       maxAge: 30 * 24 * 60 * 60, // 30 days
       path: "/",
@@ -54,6 +84,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 
   function logout() {
     setUser(undefined);
+    setReservations([]);
     destroyCookie(null, "sessionUser");
     router.push("/");
   }
@@ -76,13 +107,32 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     });
   }
 
+  function removeFromReservations(reservationId: number) {
+    setReservations((prevReservations) => {
+      const updatedReservations = prevReservations.filter(
+        (reservation) => reservation.id !== reservationId
+      );
+      return updatedReservations;
+    });
+  }
+
+  function addToReservations(newReservation: Reservation) {
+    setReservations((prevReservations) => {
+      const updatedReservations = [...prevReservations, newReservation];
+      return updatedReservations;
+    });
+  }
+
   return (
     <UserContext.Provider
       value={{
         user,
+        reservations,
         login,
         logout,
         updateUserData,
+        removeFromReservations,
+        addToReservations,
       }}
     >
       {children}
