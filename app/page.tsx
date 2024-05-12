@@ -20,7 +20,7 @@ export default function Home() {
       </div>
       <div className="flex-1 w-full md:w-1/2 lg:w-1/3 bg-white flex flex-col items-center justify-center p-4 relative">
         <div className="flex md:hidden flex-col font-cactus absolute top-0 left-0 m-8 justify-center">
-          <span className="text-3xl font-bold italic animate-text bg-gradient-to-r from-teal-500 via-purple-500 to-orange-500 bg-clip-text text-transparent">
+          <span className="text-3xl font-bold italic animate-text bg-gradient-to-r from-teal-500 via-purple-500 to-orange-500 bg-clip-text text-transparent pr-2">
             Autobooking
           </span>
         </div>

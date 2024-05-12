@@ -1,3 +1,4 @@
+import React from "react";
 import DayColumn from "./DayColumn";
 
 interface Session {
@@ -20,7 +21,7 @@ interface WeeklyViewProps {
   };
 }
 
-export default function WeeklyView({ sessions }: WeeklyViewProps) {
+const WeeklyView: React.FC<WeeklyViewProps> = ({ sessions }) => {
   const daysOfWeek: Day[] = [
     { name: "Lunes", sessions: sessions.mon },
     { name: "Martes", sessions: sessions.tue },
@@ -30,12 +31,14 @@ export default function WeeklyView({ sessions }: WeeklyViewProps) {
   ];
 
   return (
-    <div className="w-full max-w-6xl mx-auto">
-      <div className="bg-white rounded-lg shadow-md p-6 dark:bg-gray-900">
-        <h2 className="text-2xl font-bold mb-2 dark:text-white">
-          Vista Semanal
+    <div className="flex flex-col items-center justify-center w-full h-full bg-white rounded-lg shadow-lg">
+      <div className="w-full p-6 dark:bg-gray-900">
+        <h2 className="text-xl font-semibold dark:text-white">
+          Planning Semanal
         </h2>
-        <div className="grid grid-cols-5 gap-4">
+      </div>
+      <div className="w-full h-full overflow-x-auto">
+        <div className="flex space-x-4 justify-center min-w-max mx-auto  dark:bg-gray-900 h-full p-6">
           {daysOfWeek.map((day, index) => (
             <DayColumn key={index} day={day} />
           ))}
@@ -43,4 +46,6 @@ export default function WeeklyView({ sessions }: WeeklyViewProps) {
       </div>
     </div>
   );
-}
+};
+
+export default WeeklyView;
