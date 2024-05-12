@@ -23,15 +23,13 @@ export default function DeactivationForm({
 
   return (
     <div className="mx-auto max-w-md bg-white dark:bg-gray-800 dark:text-white p-4">
-      <h1 className="text-2xl font-bold mb-6 text-center text-black">
-        {formTitle}
-      </h1>
+      <h1 className="text-2xl font-bold mb-6 text-center ">{formTitle}</h1>
       <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
         <CustomInput
           label="Password"
           name="password"
           type="password"
-          bgColor="bg-white"
+          bgColor="bg-white dark:bg-gray-800"
           value={password}
           required
           autoComplete="current-password"
