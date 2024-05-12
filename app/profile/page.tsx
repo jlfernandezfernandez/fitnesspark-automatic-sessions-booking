@@ -139,7 +139,7 @@ export default function ProfilePage() {
               Desconectar
             </button>
           </header>
-          <div className="flex-grow flex items-center justify-center">
+          <div className="flex-grow flex items-center justify-center mb-2">
             <WeeklyView reservations={reservations} userId={user.id} />
           </div>
           <Modal isOpen={isModalOpen}>
