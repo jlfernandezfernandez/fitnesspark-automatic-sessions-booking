@@ -29,35 +29,28 @@ def get_desired_day():
     return days_of_week[desired_day]
 
 
-def get_session_to_book(sessions, name):
-    config = load_config()
-    desired_day = get_desired_day()
-
-    if name in config and desired_day in config[name]["reservations"]:
-        desired_activity = config[name]["reservations"][desired_day][0]["activity"]
-        desired_hour = config[name]["reservations"][desired_day][0]["time"]
-
-        for session in sessions:
-            if session["time"] == desired_hour:
-                if session["activity"]["name"] == desired_activity:
-                    return (desired_activity, desired_hour, session["id"])
+def get_session_to_book(sessions, activity, time):
+    for session in sessions:
+        if session["time"] == time:
+            if session["activity"]["name"] == activity:
+                return (activity, time, session["id"])
 
 
-def book(key, name):
+def book(key, email, activity, time):
     cookies = login(key)
     sessions = get_sessions(cookies)
-    session_info = get_session_to_book(sessions, name)
+    session_info = get_session_to_book(sessions, activity, time)
 
     if session_info:
         session_name, session_hour, session_id = session_info
-        print(f"Reservando sesión {session_name} a las {session_hour} para {name}")
-        book_session(cookies, session_id)
+        print(f"Reservando sesión {session_name} a las {session_hour} para {email}")
+        #  book_session(cookies, session_id)
     else:
-        print(f"No se ha encontrado ninguna sesión para {name}")
+        print(f"No se ha encontrado ninguna sesión para {email}")
 
 
 def __main__():
-    book("*****", "jordi")
+    book("*****", "jordi.ff97@gmail.com", "BODY COMBAT", "19:00")
 
 
 if __name__ == "__main__":
