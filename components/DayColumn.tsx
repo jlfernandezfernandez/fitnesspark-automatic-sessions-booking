@@ -7,6 +7,8 @@ import {
   deleteReservation,
 } from "@/services/ReservationService";
 import { useUser } from "@/providers/UserContext";
+import ActivitySelect from "./activity-select";
+import TimeInput from "./time-input";
 
 interface Session {
   id: number;
@@ -45,7 +47,7 @@ const DayColumn: React.FC<DayColumnProps> = ({ day, userId }) => {
   };
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
     field: string
   ) => {
     setNewSession((prev) => ({
@@ -79,6 +81,11 @@ const DayColumn: React.FC<DayColumnProps> = ({ day, userId }) => {
     }
   };
 
+  const cancelAddSession = () => {
+    setIsAddingSession(false); // Reset the adding state
+    setNewSession({ id: 0, activity: "", time: "" }); // Clear the form
+  };
+
   const deleteSession = async (session: Session) => {
     try {
       const response = await deleteReservation(session.id);
@@ -91,30 +98,35 @@ const DayColumn: React.FC<DayColumnProps> = ({ day, userId }) => {
   };
 
   return (
-    <div className="flex flex-col items-center m-1 p-4 min-h-[300px] w-full sm:w-auto">
+    <div className="flex flex-col items-center m-1 p-4 min-h-[300px] w-full sm:w-auto bg-white dark:bg-gray-800 rounded-lg shadow-md">
       <div className="font-medium text-gray-700 dark:text-gray-300">
         {day.name}
       </div>
       <div className="mt-2">
         {isAddingSession ? (
           <form className="flex flex-col space-y-2" onSubmit={addSession}>
-            <Input
-              className="mt-2"
-              placeholder="Sesión"
+            <ActivitySelect
               value={newSession.activity}
-              required
               onChange={(e) => handleInputChange(e, "activity")}
-            />
-            <Input
-              className="mt-1"
-              placeholder="Hora"
-              value={newSession.time}
               required
-              type="time"
-              onChange={(e) => handleInputChange(e, "time")}
             />
-            <div className="flex justify-center">
-              <Button type="submit">Añadir</Button>
+            <TimeInput
+              value={newSession.time}
+              onChange={(e) => handleInputChange(e, "time")}
+              required
+            />
+            <div className="flex space-x-4">
+              <Button type="submit" className="flex-1 min-w-[80px]">
+                Añadir
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="flex-1 min-w-[80px]"
+                onClick={cancelAddSession}
+              >
+                Cancelar
+              </Button>
             </div>
           </form>
         ) : (
@@ -123,14 +135,16 @@ const DayColumn: React.FC<DayColumnProps> = ({ day, userId }) => {
           </Button>
         )}
       </div>
-      <div className="mt-4 grid grid-cols-1 gap-4">
+      <div className="mt-4 grid grid-cols-1 gap-4 w-full min-w-[200px]">
         {sortedSessions.map((session) => (
           <div
             key={session.id}
-            className="bg-gray-100 rounded-lg p-4 dark:bg-gray-800 flex justify-between items-center"
+            className="bg-gray-100 rounded-lg p-4 dark:bg-gray-800 flex justify-between items-center shadow-sm hover:shadow-lg transition-shadow"
           >
             <div>
-              <h3 className="font-medium">{session.activity}</h3>
+              <h3 className="font-medium text-gray-800 dark:text-gray-200">
+                {session.activity}
+              </h3>
               <p className="text-gray-500 dark:text-gray-400">
                 {session.time.slice(0, 5)}
               </p>
