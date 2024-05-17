@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useUser } from "@/providers/UserContext";
 import UserForm from "@/components/UserForm";
 import Modal from "@/components/Modal";
@@ -30,71 +30,69 @@ export default function ProfilePage() {
     }
   }, [user, updateUserData]);
 
-  const handleLinkFitnessPark = async (
-    fitnesspark_email: string,
-    fitnesspark_password: string
-  ) => {
-    try {
-      const isLinked = await loginToFitnessPark(
-        fitnesspark_email,
-        fitnesspark_password
-      );
-      if (isLinked) {
-        handleSuccessfulLink(fitnesspark_email, fitnesspark_password);
-      } else {
-        setError("Revisa las credenciales.");
-      }
-    } catch (error) {
-      setError("Algo ha salido mal.");
-    }
-  };
-
-  const handleSuccessfulLink = async (
-    fitnesspark_email: string,
-    fitnesspark_password: string
-  ) => {
-    if (user) {
+  const handleLinkFitnessPark = useCallback(
+    async (fitnesspark_email: string, fitnesspark_password: string) => {
       try {
-        const newUserData = {
-          ...user,
-          isLinked: true,
+        const isLinked = await loginToFitnessPark(
           fitnesspark_email,
-          fitnesspark_password,
-        };
-        updateUserOnServer(newUserData);
-        updateUserData(newUserData);
-        setModalOpen(false);
+          fitnesspark_password
+        );
+        if (isLinked) {
+          handleSuccessfulLink(fitnesspark_email, fitnesspark_password);
+        } else {
+          setError("Revisa las credenciales.");
+        }
       } catch (error) {
-        setError("No se pudo actualizar el usuario.");
+        setError("Algo ha salido mal.");
       }
-    }
-  };
+    },
+    [user, updateUserData]
+  );
 
-  const updateUserOnServer = async (newUserData: UserProps) => {
+  const handleSuccessfulLink = useCallback(
+    async (fitnesspark_email: string, fitnesspark_password: string) => {
+      if (user) {
+        try {
+          const newUserData = {
+            ...user,
+            isLinked: true,
+            fitnesspark_email,
+            fitnesspark_password,
+          };
+          await updateUserOnServer(newUserData);
+          updateUserData(newUserData);
+          setModalOpen(false);
+        } catch (error) {
+          setError("No se pudo actualizar el usuario.");
+        }
+      }
+    },
+    [user, updateUserData]
+  );
+
+  const updateUserOnServer = useCallback(async (newUserData: UserProps) => {
     const response = await fetch("/api/user", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        newUserData,
-      }),
+      body: JSON.stringify({ newUserData }),
     });
 
     if (!response.ok) {
       throw new Error("Failed to update user");
     }
-  };
+  }, []);
 
-  const handleOpenConfirmationModal = () => {
+  const handleOpenConfirmationModal = useCallback(() => {
     setConfirmationModalOpen(true);
-  };
+  }, []);
 
-  const handleCloseConfirmationModal = () => {
+  const handleCloseConfirmationModal = useCallback(() => {
     setConfirmationModalOpen(false);
-  };
+  }, []);
 
-  const handleConfirmDeactivation = async () => {
+  const handleConfirmDeactivation = useCallback(async () => {
     if (user) {
       try {
         await deactivateUserOnServer(user.id);
@@ -106,23 +104,21 @@ export default function ProfilePage() {
         );
       }
     }
-  };
+  }, [user, logout]);
 
-  const deactivateUserOnServer = async (userId: number) => {
+  const deactivateUserOnServer = useCallback(async (userId: number) => {
     const response = await fetch("/api/user/deactivate", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        userId,
-      }),
+      body: JSON.stringify({ userId }),
     });
 
     if (!response.ok) {
       throw new Error("Failed to deactivate user");
     }
-  };
+  }, []);
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100 dark:bg-gray-800 dark:text-white w-full">
