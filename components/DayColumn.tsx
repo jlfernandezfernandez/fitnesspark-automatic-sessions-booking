@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { XIcon } from "./ui/x-icon";
-
 import {
   addReservation,
   deleteReservation,
@@ -35,27 +34,32 @@ const DayColumn: React.FC<DayColumnProps> = ({ day, userId }) => {
   });
   const { removeFromReservations, addToReservations } = useUser();
 
-  const sortedSessions = day.sessions.sort((a, b) => {
-    const timeA = parseInt(a.time.split(":")[0]);
-    const timeB = parseInt(b.time.split(":")[0]);
-    return timeA - timeB;
+  const sortedSessions = [...day.sessions].sort((a, b) => {
+    const [hoursA, minutesA] = a.time.split(":").map(Number);
+    const [hoursB, minutesB] = b.time.split(":").map(Number);
+    return hoursA !== hoursB ? hoursA - hoursB : minutesA - minutesB;
   });
 
   const toggleAddingSession = () => {
-    setIsAddingSession(!isAddingSession);
+    setIsAddingSession((prev) => !prev);
   };
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     field: string
   ) => {
-    setNewSession({
-      ...newSession,
+    setNewSession((prev) => ({
+      ...prev,
       [field]: e.target.value,
-    });
+    }));
   };
 
-  const addSession = async () => {
+  const addSession = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newSession.activity || !newSession.time) {
+      console.error("Activity and time are required.");
+      return;
+    }
     try {
       if (userId) {
         const response = await addReservation({
@@ -64,8 +68,10 @@ const DayColumn: React.FC<DayColumnProps> = ({ day, userId }) => {
           ...newSession,
         });
 
-        if (response.status == 200 && response.reservation) {
+        if (response.status === 200 && response.reservation) {
           addToReservations(response.reservation);
+          setIsAddingSession(false); // Reset the adding state
+          setNewSession({ id: 0, activity: "", time: "" }); // Clear the form
         }
       }
     } catch (error) {
@@ -75,13 +81,9 @@ const DayColumn: React.FC<DayColumnProps> = ({ day, userId }) => {
 
   const deleteSession = async (session: Session) => {
     try {
-      const sessionToDelete = day.sessions.find((s) => s.id === session.id);
-      if (sessionToDelete) {
-        const response = await deleteReservation(sessionToDelete.id);
-
-        if (response.status === 200) {
-          removeFromReservations(sessionToDelete.id);
-        }
+      const response = await deleteReservation(session.id);
+      if (response.status === 200) {
+        removeFromReservations(session.id);
       }
     } catch (error) {
       console.error("Error al eliminar la sesión:", error);
@@ -95,7 +97,7 @@ const DayColumn: React.FC<DayColumnProps> = ({ day, userId }) => {
       </div>
       <div className="mt-2">
         {isAddingSession ? (
-          <form className="flex flex-col space-y-2">
+          <form className="flex flex-col space-y-2" onSubmit={addSession}>
             <Input
               className="mt-2"
               placeholder="Sesión"
@@ -112,7 +114,7 @@ const DayColumn: React.FC<DayColumnProps> = ({ day, userId }) => {
               onChange={(e) => handleInputChange(e, "time")}
             />
             <div className="flex justify-center">
-              <Button onClick={addSession}>Añadir</Button>
+              <Button type="submit">Añadir</Button>
             </div>
           </form>
         ) : (
@@ -122,9 +124,9 @@ const DayColumn: React.FC<DayColumnProps> = ({ day, userId }) => {
         )}
       </div>
       <div className="mt-4 grid grid-cols-1 gap-4">
-        {sortedSessions.map((session, index) => (
+        {sortedSessions.map((session) => (
           <div
-            key={index}
+            key={session.id}
             className="bg-gray-100 rounded-lg p-4 dark:bg-gray-800 flex justify-between items-center"
           >
             <div>

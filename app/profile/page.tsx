@@ -23,10 +23,12 @@ export default function ProfilePage() {
     if (user) {
       checkFitnessParkLink(user).then((isLinked) => {
         setModalOpen(!isLinked);
-        updateUserData({ ...user, isLinked });
+        if (user.isLinked !== isLinked) {
+          updateUserData({ ...user, isLinked });
+        }
       });
     }
-  }, [user?.isLinked]);
+  }, [user, updateUserData]);
 
   const handleLinkFitnessPark = async (
     fitnesspark_email: string,

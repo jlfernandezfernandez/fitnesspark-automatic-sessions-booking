@@ -6,6 +6,7 @@ import React, {
   useState,
   useEffect,
   ReactNode,
+  useCallback,
 } from "react";
 import { UserProps } from "@/model/UserData";
 import { useRouter } from "next/navigation";
@@ -25,7 +26,7 @@ interface UserContextType {
   reservations: Reservation[];
   login: (userData: UserProps) => void;
   logout: () => void;
-  updateUserData: (userData: UserProps) => void;
+  updateUserData: (userData: Partial<UserProps>) => void;
   removeFromReservations: (reservationId: number) => void;
   addToReservations: (newReservation: Reservation) => void;
 }
@@ -64,32 +65,35 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     };
 
     fetchData();
-  }, []);
+  }, [router]);
 
-  async function getReservations(userId: number) {
+  const getReservations = useCallback(async (userId: number) => {
     const { reservations, status } = await getAllReservations(userId);
     if (status === 200) {
       setReservations(reservations);
     }
-  }
+  }, []);
 
-  function login(userData: UserProps) {
-    setUser(userData);
-    getReservations(userData.id);
-    setCookie(null, "sessionUser", JSON.stringify(userData), {
-      maxAge: 30 * 24 * 60 * 60, // 30 days
-      path: "/",
-    });
-  }
+  const login = useCallback(
+    (userData: UserProps) => {
+      setUser(userData);
+      getReservations(userData.id);
+      setCookie(null, "sessionUser", JSON.stringify(userData), {
+        maxAge: 30 * 24 * 60 * 60, // 30 days
+        path: "/",
+      });
+    },
+    [getReservations]
+  );
 
-  function logout() {
+  const logout = useCallback(() => {
     setUser(undefined);
     setReservations([]);
     destroyCookie(null, "sessionUser");
     router.push("/");
-  }
+  }, [router]);
 
-  function updateUserData(userData: Partial<UserProps>) {
+  const updateUserData = useCallback((userData: Partial<UserProps>) => {
     setUser((prevUser) => {
       if (!prevUser) {
         return userData as UserProps;
@@ -98,30 +102,31 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
           ...prevUser,
           ...userData,
         };
-        setCookie(null, "sessionUser", JSON.stringify(newUser), {
-          maxAge: 30 * 24 * 60 * 60,
-          path: "/",
-        });
-        return newUser;
+        if (JSON.stringify(prevUser) !== JSON.stringify(newUser)) {
+          setCookie(null, "sessionUser", JSON.stringify(newUser), {
+            maxAge: 30 * 24 * 60 * 60,
+            path: "/",
+          });
+          return newUser;
+        }
+        return prevUser;
       }
     });
-  }
+  }, []);
 
-  function removeFromReservations(reservationId: number) {
+  const removeFromReservations = useCallback((reservationId: number) => {
     setReservations((prevReservations) => {
-      const updatedReservations = prevReservations.filter(
+      return prevReservations.filter(
         (reservation) => reservation.id !== reservationId
       );
-      return updatedReservations;
     });
-  }
+  }, []);
 
-  function addToReservations(newReservation: Reservation) {
+  const addToReservations = useCallback((newReservation: Reservation) => {
     setReservations((prevReservations) => {
-      const updatedReservations = [...prevReservations, newReservation];
-      return updatedReservations;
+      return [...prevReservations, newReservation];
     });
-  }
+  }, []);
 
   return (
     <UserContext.Provider
