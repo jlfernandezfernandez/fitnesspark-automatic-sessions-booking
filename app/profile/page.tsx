@@ -7,7 +7,7 @@ import Modal from "@/components/Modal";
 import DeactivationForm from "@/components/deactivation-form";
 import WeeklyView from "@/components/WeeklyView";
 import LoadingSpinner from "@/components/ui/loading-spinner";
-import Card from "@/components/ui/Card";
+import Card from "@/components/ui/card";
 import {
   checkFitnessParkLink,
   loginToFitnessPark,
