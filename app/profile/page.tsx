@@ -123,7 +123,7 @@ export default function ProfilePage() {
   return (
     <div className="flex flex-col min-h-screen bg-gray-100 dark:bg-gray-800 dark:text-white w-full">
       {user ? (
-        <div className="flex flex-col flex-grow w-full px-4">
+        <div className="flex flex-col flex-grow w-full px-4 sm:px-8">
           <header className="flex items-center justify-between py-4 mb-4">
             <h1 className="m-2 flex-grow text-gray-400">
               <span className="text-3xl md:text-5xl font-bold italic animate-text bg-gradient-to-r from-teal-500 via-purple-500 to-orange-500 bg-clip-text text-transparent pr-2">

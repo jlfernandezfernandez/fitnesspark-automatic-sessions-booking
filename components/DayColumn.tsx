@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button } from "./ui/button";
-import { XIcon } from "./ui/x-icon";
+import { XIcon, PlusIcon } from "lucide-react";
 import {
   addReservation,
   deleteReservation,
@@ -94,13 +94,25 @@ const DayColumn: React.FC<DayColumnProps> = ({ day, userId }) => {
     }
   };
 
+  const sessionLimit = 3;
+  const sessionsCount = day.sessions.length;
+
   return (
-    <div className="flex flex-col items-center m-1 p-4 min-h-[250px] sm:min-h-[400px] w-full sm:w-auto bg-white dark:bg-gray-800 rounded-lg shadow-md">
-      <div className="font-medium text-gray-700 dark:text-gray-300">
-        {day.name}
+    <div className="relative flex flex-col items-center m-1 p-4 sm:p-6 min-h-[450px] sm:min-h-[500px] w-full sm:w-auto bg-gray-100 dark:bg-gray-800 rounded-xl dark:text-white">
+      <div className="flex justify-between items-center w-full">
+        <div className="font-medium text-gray-700 dark:text-gray-300">
+          {day.name}
+        </div>
+        {!isAddingSession && (
+          <GradientButton
+            onClick={toggleAddingSession}
+            text={<PlusIcon className="w-4 h-4" />}
+            disabled={sessionsCount >= sessionLimit}
+          />
+        )}
       </div>
-      <div className="mt-2">
-        {isAddingSession ? (
+      {isAddingSession && (
+        <div className="mt-2 w-full">
           <div className="w-full p-4 bg-white dark:bg-gray-700 rounded-lg shadow-lg transition-transform transform hover:-translate-y-1">
             <form className="flex flex-col space-y-2" onSubmit={addSession}>
               <ActivitySelect
@@ -128,15 +140,13 @@ const DayColumn: React.FC<DayColumnProps> = ({ day, userId }) => {
               </div>
             </form>
           </div>
-        ) : (
-          <GradientButton onClick={toggleAddingSession} text="Añadir Sesión" />
-        )}
-      </div>
-      <div className="mt-4 grid grid-cols-1 gap-4 w-full min-w-[200px]">
+        </div>
+      )}
+      <div className="mt-3 grid grid-cols-1 gap-4 w-full min-w-[200px]">
         {sortedSessions.map((session) => (
           <div
             key={session.id}
-            className="bg-gray-100 rounded-lg p-4 dark:bg-gray-800 flex justify-between items-center shadow-sm hover:shadow-lg transition-shadow"
+            className="bg-white rounded-lg p-4 dark:bg-gray-600 flex justify-between items-center shadow-sm hover:shadow-lg transition-shadow"
           >
             <div>
               <h3 className="font-medium text-gray-800 dark:text-gray-200">
@@ -155,6 +165,11 @@ const DayColumn: React.FC<DayColumnProps> = ({ day, userId }) => {
             </Button>
           </div>
         ))}
+      </div>
+      <div className="absolute bottom-2 left-0 right-0 text-center text-xs text-gray-500 dark:text-gray-400 mb-1">
+        {sessionsCount < sessionLimit
+          ? `${sessionLimit - sessionsCount} sesiones restantes`
+          : "Todas reservadas"}
       </div>
     </div>
   );
