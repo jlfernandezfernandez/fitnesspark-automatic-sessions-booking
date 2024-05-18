@@ -1,5 +1,5 @@
 import React, { useMemo, useCallback } from "react";
-import DayColumn from "./DayColumn";
+import DayColumn from "./day-column";
 
 interface Session {
   id: number;

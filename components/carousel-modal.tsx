@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { DialogTrigger, DialogContent, Dialog } from "@/components/ui/dialog";
 import {
@@ -12,10 +13,17 @@ import { Input } from "@/components/ui/input";
 import Image from "next/image";
 
 export function CarouselModal() {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    // handle form submission logic here
+  };
+
   return (
-    <Dialog defaultOpen>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button>Open Modal</Button>
+        <Button onClick={() => setIsOpen(true)}>Open Modal</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[800px]">
         <Carousel>
@@ -27,10 +35,7 @@ export function CarouselModal() {
                   className="rounded-lg object-cover"
                   height={400}
                   src="/placeholder.svg"
-                  style={{
-                    aspectRatio: "400/400",
-                    objectFit: "cover",
-                  }}
+                  style={{ aspectRatio: "400/400", objectFit: "cover" }}
                   width={400}
                 />
                 <div className="flex flex-col justify-center space-y-4">
@@ -62,10 +67,7 @@ export function CarouselModal() {
                   className="rounded-lg object-cover"
                   height={400}
                   src="/placeholder.svg"
-                  style={{
-                    aspectRatio: "400/400",
-                    objectFit: "cover",
-                  }}
+                  style={{ aspectRatio: "400/400", objectFit: "cover" }}
                   width={400}
                 />
               </div>
@@ -79,18 +81,19 @@ export function CarouselModal() {
                       Enter your email and password to access your account.
                     </p>
                   </div>
-                  <form className="grid gap-4">
+                  <form className="grid gap-4" onSubmit={handleSubmit}>
                     <div className="grid gap-2">
                       <Label htmlFor="email">Email</Label>
                       <Input
                         id="email"
                         placeholder="m@example.com"
                         type="email"
+                        required
                       />
                     </div>
                     <div className="grid gap-2">
                       <Label htmlFor="password">Password</Label>
-                      <Input id="password" type="password" />
+                      <Input id="password" type="password" required />
                     </div>
                     <Button className="w-full" type="submit">
                       Sign In
@@ -102,10 +105,7 @@ export function CarouselModal() {
                   className="rounded-lg object-cover"
                   height={400}
                   src="/placeholder.svg"
-                  style={{
-                    aspectRatio: "400/400",
-                    objectFit: "cover",
-                  }}
+                  style={{ aspectRatio: "400/400", objectFit: "cover" }}
                   width={400}
                 />
               </div>

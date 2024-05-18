@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useCallback } from "react";
-import UserForm from "@/components/UserForm";
+import UserForm from "@/components/user-form";
 import LoadingSpinner from "@/components/ui/loading-spinner";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/providers/UserContext";
@@ -11,26 +11,6 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState<boolean>(false); // Estado de carga
   const { login } = useUser();
   const router = useRouter();
-
-  const handleLogin = useCallback(
-    async (email: string, password: string) => {
-      setIsLoading(true); // Comienza la carga
-      try {
-        const response = await loginRequest(email, password);
-
-        if (!response.ok) {
-          handleError(response);
-          return;
-        }
-
-        const userData = await response.json();
-        handleSuccessfulLogin(userData);
-      } catch (error) {
-        handleLoginError();
-      }
-    },
-    [login]
-  );
 
   const loginRequest = useCallback(async (email: string, password: string) => {
     return await fetch("/api/login", {
@@ -67,6 +47,26 @@ export default function LoginPage() {
     setError("Algo ha salido mal.");
     setIsLoading(false); // Termina la carga en caso de error
   }, []);
+
+  const handleLogin = useCallback(
+    async (email: string, password: string) => {
+      setIsLoading(true); // Comienza la carga
+      try {
+        const response = await loginRequest(email, password);
+
+        if (!response.ok) {
+          handleError(response);
+          return;
+        }
+
+        const userData = await response.json();
+        handleSuccessfulLogin(userData);
+      } catch (error) {
+        handleLoginError();
+      }
+    },
+    [loginRequest, handleError, handleSuccessfulLogin, handleLoginError]
+  );
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-white dark:bg-gray-800 dark:text-white">

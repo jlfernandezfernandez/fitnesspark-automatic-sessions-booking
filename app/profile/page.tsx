@@ -2,16 +2,16 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { useUser } from "@/providers/UserContext";
-import UserForm from "@/components/UserForm";
+import UserForm from "@/components/user-form";
 import Modal from "@/components/Modal";
-import Footer from "@/components/Footer";
-import DeactivationForm from "@/components/DesactivationForm";
+import Footer from "@/components/footer";
+import DeactivationForm from "@/components/deactivation-form";
 import WeeklyView from "@/components/WeeklyView";
-import LoadingSpinner from "@/components/ui/loading-spinner"; // Importa el spinner
+import LoadingSpinner from "@/components/ui/loading-spinner";
 import {
   checkFitnessParkLink,
   loginToFitnessPark,
-  unlinkFromFitnessPark, // Importa la función para desvincular
+  unlinkFromFitnessPark,
 } from "@/services/FitnessParkService";
 import { UserProps } from "@/model/UserData";
 
@@ -20,7 +20,7 @@ export default function ProfilePage() {
   const { user, logout, updateUserData, reservations } = useUser();
   const [isModalOpen, setModalOpen] = useState(false);
   const [isConfirmationModalOpen, setConfirmationModalOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true); // Estado de carga
+  const [isLoading, setIsLoading] = useState(true);
 
   const updateUserOnServer = useCallback(async (newUserData: UserProps) => {
     const response = await fetch("/api/user", {
@@ -28,7 +28,7 @@ export default function ProfilePage() {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ newUserData }),
+      body: JSON.stringify(newUserData),
     });
 
     if (!response.ok) {
@@ -71,7 +71,7 @@ export default function ProfilePage() {
           fitnesspark_password
         );
         if (isLinked) {
-          handleSuccessfulLink(fitnesspark_email, fitnesspark_password);
+          await handleSuccessfulLink(fitnesspark_email, fitnesspark_password);
         } else {
           setError("Revisa las credenciales.");
         }
@@ -129,7 +129,7 @@ export default function ProfilePage() {
   }, []);
 
   const handleConfirmDeactivation = useCallback(async () => {
-    setIsLoading(true); // Activar spinner
+    setIsLoading(true);
     setError("");
     if (user) {
       try {
@@ -144,7 +144,7 @@ export default function ProfilePage() {
           "No se pudo desactivar la cuenta. Por favor, verifica tu contraseña."
         );
       } finally {
-        setIsLoading(false); // Desactivar spinner
+        setIsLoading(false);
       }
     }
   }, [user, logout, deactivateUserOnServer, handleCloseConfirmationModal]);
@@ -156,24 +156,24 @@ export default function ProfilePage() {
         if (user.isLinked !== isLinked) {
           updateUserData({ ...user, isLinked });
         }
-        setIsLoading(false); // Termina la carga
+        setIsLoading(false);
       });
     } else {
-      setIsLoading(false); // Termina la carga si no hay usuario
+      setIsLoading(false);
     }
   }, [user, updateUserData]);
 
   useEffect(() => {
     if (user) {
-      setIsLoading(false); // Termina la carga cuando el usuario está disponible
+      setIsLoading(false);
     }
   }, [user]);
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100 dark:bg-gray-800 dark:text-white w-full">
-      {isLoading || !user ? ( // Muestra el spinner si está cargando o si no hay usuario
+      {isLoading || !user ? (
         <div className="flex flex-grow items-center justify-center">
-          <LoadingSpinner size={80} /> {/* Ajusta el tamaño del spinner */}
+          <LoadingSpinner size={80} />
         </div>
       ) : (
         <div className="flex flex-col flex-grow w-full px-4 sm:px-8">

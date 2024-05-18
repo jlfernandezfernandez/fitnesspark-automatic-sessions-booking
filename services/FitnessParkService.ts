@@ -3,6 +3,7 @@
 import { UserProps } from "@/model/UserData";
 import { sql } from "@vercel/postgres";
 
+// Función para verificar la vinculación con Fitness Park
 export async function checkFitnessParkLink(user: UserProps): Promise<boolean> {
   if (!user.fitnesspark_email || !user.fitnesspark_password) {
     return false;
@@ -25,6 +26,7 @@ export async function checkFitnessParkLink(user: UserProps): Promise<boolean> {
   }
 }
 
+// Función para iniciar sesión en Fitness Park
 export async function loginToFitnessPark(
   username: string,
   password: string
@@ -49,21 +51,27 @@ export async function loginToFitnessPark(
     }
 
     const data = await response.json();
-    return data.accessToken !== null;
+    return !!data.accessToken; // Asegura que sea booleano
   } catch (error) {
+    console.error("Error logging into Fitness Park:", error);
     throw new Error("Failed to fetch access token");
   }
 }
 
+// Función para actualizar el estado de vinculación con Fitness Park
 export async function updateUserFitnessParkLink(
   userId: number,
   isLinked: boolean
 ): Promise<void> {
+  if (!userId) {
+    throw new Error("User ID is required");
+  }
+
   try {
     await sql`
       UPDATE users
       SET is_linked_with_fitnesspark = ${isLinked}
-      WHERE user_id = ${userId} and is_active = true;
+      WHERE user_id = ${userId} AND is_active = true;
     `;
   } catch (error) {
     console.error("Error updating user Fitness Park link:", error);
@@ -71,7 +79,12 @@ export async function updateUserFitnessParkLink(
   }
 }
 
+// Función para desvincular la cuenta de Fitness Park
 export async function unlinkFromFitnessPark(userId: number): Promise<void> {
+  if (!userId) {
+    throw new Error("User ID is required");
+  }
+
   try {
     await sql`
       UPDATE users
@@ -79,7 +92,7 @@ export async function unlinkFromFitnessPark(userId: number): Promise<void> {
         fitnesspark_email = NULL,
         fitnesspark_password = NULL,
         is_linked_with_fitnesspark = false
-      WHERE user_id = ${userId} and is_active = true;
+      WHERE user_id = ${userId} AND is_active = true;
     `;
   } catch (error) {
     console.error("Error unlinking from Fitness Park:", error);

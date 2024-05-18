@@ -3,7 +3,7 @@
 import React, { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/providers/UserContext";
-import UserForm from "@/components/UserForm";
+import UserForm from "@/components/user-form";
 import LoadingSpinner from "@/components/ui/loading-spinner";
 
 export default function RegisterPage() {
@@ -11,26 +11,6 @@ export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const router = useRouter();
   const { login } = useUser();
-
-  const handleRegister = useCallback(
-    async (email: string, password: string) => {
-      setIsLoading(true);
-      try {
-        const response = await registerRequest(email, password);
-
-        if (!response.ok) {
-          handleError(response);
-          return;
-        }
-
-        const userData = await response.json();
-        handleSuccessfulRegister(userData);
-      } catch (error) {
-        handleRegisterError();
-      }
-    },
-    [login]
-  );
 
   const registerRequest = useCallback(
     async (email: string, password: string) => {
@@ -70,6 +50,31 @@ export default function RegisterPage() {
     setError("Algo ha salido mal.");
     setIsLoading(false);
   }, []);
+
+  const handleRegister = useCallback(
+    async (email: string, password: string) => {
+      setIsLoading(true);
+      try {
+        const response = await registerRequest(email, password);
+
+        if (!response.ok) {
+          handleError(response);
+          return;
+        }
+
+        const userData = await response.json();
+        handleSuccessfulRegister(userData);
+      } catch (error) {
+        handleRegisterError();
+      }
+    },
+    [
+      registerRequest,
+      handleError,
+      handleSuccessfulRegister,
+      handleRegisterError,
+    ]
+  );
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-white dark:bg-gray-800 dark:text-white">

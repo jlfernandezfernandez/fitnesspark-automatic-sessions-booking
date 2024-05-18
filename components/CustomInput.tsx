@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 
 interface CustomInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
@@ -15,18 +15,22 @@ export default function CustomInput({
   const [focus, setFocus] = useState(false);
   const [value, setValue] = useState(rest.value || "");
 
-  const handleFocus = () => setFocus(true);
-  const handleBlur = () => {
+  const handleFocus = useCallback(() => setFocus(true), []);
+  const handleBlur = useCallback(() => {
     if (!value) {
       setFocus(false);
     }
-  };
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setValue(event.target.value);
-    if (rest.onChange) {
-      rest.onChange(event);
-    }
-  };
+  }, [value]);
+
+  const handleChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      setValue(event.target.value);
+      if (rest.onChange) {
+        rest.onChange(event);
+      }
+    },
+    [rest]
+  );
 
   return (
     <div
@@ -41,7 +45,9 @@ export default function CustomInput({
         onChange={handleChange}
         onFocus={handleFocus}
         onBlur={handleBlur}
-        className={`appearance-none bg-transparent w-full dark:text-white text-gray-70  focus:outline-none py-3 px-4 ${rest.className}`}
+        aria-invalid={!!error}
+        aria-describedby={error ? `${rest.name}-error` : undefined}
+        className={`appearance-none bg-transparent w-full dark:text-white text-gray-700 focus:outline-none py-3 px-4 ${rest.className}`}
       />
       <label
         htmlFor={rest.name}
@@ -54,7 +60,11 @@ export default function CustomInput({
       >
         {label}
       </label>
-      {error && <p className="text-red-500 text-xs italic">{error}</p>}
+      {error && (
+        <p id={`${rest.name}-error`} className="text-red-500 text-xs italic">
+          {error}
+        </p>
+      )}
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import CustomInput from "@/components/CustomInput";
 
 interface DeactivationFormProps {
@@ -16,14 +16,33 @@ export default function DeactivationForm({
 }: DeactivationFormProps) {
   const [password, setPassword] = useState<string>("");
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    onSubmit(password);
-  };
+  const handlePasswordChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setPassword(e.target.value);
+    },
+    []
+  );
+
+  const handleSubmit = useCallback(
+    (event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      onSubmit(password);
+    },
+    [password, onSubmit]
+  );
 
   return (
-    <div className="mx-auto max-w-md bg-white dark:bg-gray-800 dark:text-white p-4">
-      <h1 className="text-2xl font-bold mb-6 text-center ">{formTitle}</h1>
+    <div
+      className="mx-auto max-w-md bg-white dark:bg-gray-800 dark:text-white p-4 rounded-lg shadow-lg"
+      role="dialog"
+      aria-labelledby="deactivation-form-title"
+    >
+      <h1
+        id="deactivation-form-title"
+        className="text-2xl font-bold mb-6 text-center"
+      >
+        {formTitle}
+      </h1>
       <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
         <CustomInput
           label="Password"
@@ -33,14 +52,17 @@ export default function DeactivationForm({
           value={password}
           required
           autoComplete="current-password"
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            setPassword(e.target.value)
-          }
+          onChange={handlePasswordChange}
         />
-        {error && <p className="text-red-500 text-sm">🔺 {error}</p>}
+        {error && (
+          <p className="text-red-500 text-sm" role="alert">
+            🔺 {error}
+          </p>
+        )}
         <button
           type="submit"
           className="bg-yellow-fitnesspark text-black font-bold py-3 rounded focus:outline-none focus:shadow-outline"
+          aria-busy={!!error}
         >
           {submitButtonLabel}
         </button>
