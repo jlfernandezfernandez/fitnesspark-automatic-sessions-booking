@@ -36,6 +36,7 @@ const DayColumn: React.FC<DayColumnProps> = ({ day, userId }) => {
   });
   const { removeFromReservations, addToReservations } = useUser();
 
+  // Ordena las sesiones por tiempo
   const sortedSessions = [...day.sessions].sort((a, b) => {
     const [hoursA, minutesA] = a.time.split(":").map(Number);
     const [hoursB, minutesB] = b.time.split(":").map(Number);

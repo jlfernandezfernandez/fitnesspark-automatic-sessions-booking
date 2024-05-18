@@ -7,6 +7,7 @@ import Modal from "@/components/Modal";
 import DeactivationForm from "@/components/deactivation-form";
 import WeeklyView from "@/components/WeeklyView";
 import LoadingSpinner from "@/components/ui/loading-spinner";
+import Card from "@/components/ui/Card";
 import {
   checkFitnessParkLink,
   loginToFitnessPark,
@@ -14,7 +15,6 @@ import {
 } from "@/services/FitnessParkService";
 import { UserProps } from "@/model/UserData";
 import Footer from "@/components/ui/footer";
-import FitnessParkLogo from "@/components/fitnesspark-logo";
 
 export default function ProfilePage() {
   const [error, setError] = useState<string>("");
@@ -177,17 +177,36 @@ export default function ProfilePage() {
           <LoadingSpinner size={80} />
         </div>
       ) : (
-        <div className="flex flex-col flex-grow w-full px-4 sm:px-8">
-          <div className="flex justify-end space-x-2 mt-4 mb-3">
-            <button
-              className="px-4 py-2 text-sm rounded-lg border border-gray-300 shadow-sm bg-white text-gray-700 hover:bg-gray-200 transition duration-300"
-              onClick={logout}
-            >
-              Desconectar
-            </button>
-          </div>
-          <div className="flex-grow flex items-center justify-center mb-2">
+        <div className="flex flex-col flex-grow w-full p-4 sm:p-8">
+          <div className="flex-grow flex items-center justify-center mb-4">
             <WeeklyView reservations={reservations} userId={user.id} />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 mb-4">
+            <Card title="Ajustes de Fitness Park">
+              <button
+                onClick={handleUnlinkFitnessPark}
+                className="w-fit px-4 py-2 text-sm rounded-lg border border-yellow-500 shadow-sm bg-yellow-500 text-white hover:bg-yellow-600 transition duration-300"
+              >
+                Desvincular
+              </button>
+            </Card>
+            <Card title="Ajustes de la Cuenta">
+              <div className="flex flex-col space-y-2">
+                <button
+                  onClick={logout}
+                  className="w-fit px-4 py-2 text-sm rounded-lg border border-gray-300 shadow-sm bg-white text-gray-700 hover:bg-gray-200 transition duration-300"
+                >
+                  Desconectar
+                </button>
+                <button
+                  onClick={handleOpenConfirmationModal}
+                  className="w-fit px-4 py-2 text-sm rounded-lg border border-red-500 shadow-sm bg-red-500 text-white hover:bg-red-600 transition duration-300"
+                >
+                  Borrar cuenta
+                </button>
+              </div>
+            </Card>
+            {/* Aquí se pueden agregar más tarjetas */}
           </div>
           <Modal isOpen={isModalOpen}>
             <UserForm
@@ -210,20 +229,6 @@ export default function ProfilePage() {
               error={error}
             />
           </Modal>
-          <div className="flex justify-end px-4 py-2 mb-2 space-x-2">
-            <button
-              onClick={handleUnlinkFitnessPark}
-              className="px-4 py-2 text-sm rounded-lg border border-yellow-500 shadow-sm bg-yellow-500 text-white hover:bg-yellow-600 transition duration-300"
-            >
-              Desvincular
-            </button>
-            <button
-              onClick={handleOpenConfirmationModal}
-              className="px-4 py-2 text-sm rounded-lg border border-red-500 shadow-sm bg-red-500 text-white hover:bg-red-600 transition duration-300"
-            >
-              Borrar cuenta
-            </button>
-          </div>
         </div>
       )}
       <Footer isLinked={user?.isLinked} />
