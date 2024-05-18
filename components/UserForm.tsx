@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import CustomInput from "@/components/CustomInput";
 import Link from "next/link";
 
@@ -20,14 +20,24 @@ export default function UserForm({
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
 
+  const handleEmailChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value),
+    []
+  );
+
+  const handlePasswordChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value),
+    []
+  );
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     onSubmit(email, password);
   };
 
   return (
-    <div className="mx-auto max-w-md bg-white dark:bg-gray-800 dark:text-white text-black p-4">
-      <h1 className="text-3xl font-bold mb-6 text-center ">{formTitle}</h1>
+    <div className="mx-auto max-w-md bg-white dark:bg-gray-800 dark:text-white text-black p-6 rounded-lg shadow-lg">
+      <h1 className="text-3xl font-semibold mb-6 text-center">{formTitle}</h1>
       <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
         <CustomInput
           label="Email"
@@ -39,9 +49,7 @@ export default function UserForm({
           inputMode="email"
           autoFocus
           autoComplete="email"
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            setEmail(e.target.value)
-          }
+          onChange={handleEmailChange}
         />
         {error && <p className="text-red-500 text-sm">🔺 {error}</p>}
         <CustomInput
@@ -52,9 +60,7 @@ export default function UserForm({
           value={password}
           required
           autoComplete={isRegisterForm ? "new-password" : "current-password"}
-          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            setPassword(e.target.value)
-          }
+          onChange={handlePasswordChange}
         />
         {isRegisterForm && (
           <p className="text-center text-sm dark:text-white text-gray-600">
@@ -66,7 +72,10 @@ export default function UserForm({
         )}
         <button
           type="submit"
-          className="bg-yellow-fitnesspark text-black font-bold py-3 rounded focus:outline-none focus:shadow-outline"
+          className={`bg-yellow-fitnesspark text-black font-bold py-3 rounded focus:outline-none focus:shadow-outline ${
+            !email || !password ? "opacity-50 cursor-not-allowed" : ""
+          }`}
+          disabled={!email || !password}
         >
           {submitButtonLabel}
         </button>

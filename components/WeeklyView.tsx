@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useCallback } from "react";
 import DayColumn from "./DayColumn";
 
 interface Session {
@@ -27,15 +27,18 @@ interface WeeklyViewProps {
 }
 
 export default function WeeklyView({ reservations, userId }: WeeklyViewProps) {
-  const getSessionsForDay = (day: string): Session[] => {
-    return reservations
-      .filter((reservation) => reservation.dayOfWeek === day)
-      .map((reservation) => ({
-        id: reservation.id,
-        activity: reservation.activity,
-        time: reservation.time,
-      }));
-  };
+  const getSessionsForDay = useCallback(
+    (day: string): Session[] => {
+      return reservations
+        .filter((reservation) => reservation.dayOfWeek === day)
+        .map((reservation) => ({
+          id: reservation.id,
+          activity: reservation.activity,
+          time: reservation.time,
+        }));
+    },
+    [reservations]
+  );
 
   const daysOfWeek: Day[] = useMemo(
     () => [
@@ -45,7 +48,7 @@ export default function WeeklyView({ reservations, userId }: WeeklyViewProps) {
       { id: "thu", name: "Jueves", sessions: getSessionsForDay("thu") },
       { id: "fri", name: "Viernes", sessions: getSessionsForDay("fri") },
     ],
-    [reservations]
+    [getSessionsForDay]
   );
 
   return (

@@ -7,6 +7,7 @@ import Modal from "@/components/Modal";
 import Footer from "@/components/Footer";
 import DeactivationForm from "@/components/DesactivationForm";
 import WeeklyView from "@/components/WeeklyView";
+import LoadingSpinner from "@/components/ui/loading-spinner"; // Importa el spinner
 import {
   checkFitnessParkLink,
   loginToFitnessPark,
@@ -18,36 +19,21 @@ export default function ProfilePage() {
   const { user, logout, updateUserData, reservations } = useUser();
   const [isModalOpen, setModalOpen] = useState(false);
   const [isConfirmationModalOpen, setConfirmationModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true); // Estado de carga
 
-  useEffect(() => {
-    if (user) {
-      checkFitnessParkLink(user).then((isLinked) => {
-        setModalOpen(!isLinked);
-        if (user.isLinked !== isLinked) {
-          updateUserData({ ...user, isLinked });
-        }
-      });
+  const updateUserOnServer = useCallback(async (newUserData: UserProps) => {
+    const response = await fetch("/api/user", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ newUserData }),
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to update user");
     }
-  }, [user, updateUserData]);
-
-  const handleLinkFitnessPark = useCallback(
-    async (fitnesspark_email: string, fitnesspark_password: string) => {
-      try {
-        const isLinked = await loginToFitnessPark(
-          fitnesspark_email,
-          fitnesspark_password
-        );
-        if (isLinked) {
-          handleSuccessfulLink(fitnesspark_email, fitnesspark_password);
-        } else {
-          setError("Revisa las credenciales.");
-        }
-      } catch (error) {
-        setError("Algo ha salido mal.");
-      }
-    },
-    [user, updateUserData]
-  );
+  }, []);
 
   const handleSuccessfulLink = useCallback(
     async (fitnesspark_email: string, fitnesspark_password: string) => {
@@ -67,20 +53,39 @@ export default function ProfilePage() {
         }
       }
     },
-    [user, updateUserData]
+    [user, updateUserData, updateUserOnServer]
   );
 
-  const updateUserOnServer = useCallback(async (newUserData: UserProps) => {
-    const response = await fetch("/api/user", {
-      method: "PUT",
+  const handleLinkFitnessPark = useCallback(
+    async (fitnesspark_email: string, fitnesspark_password: string) => {
+      try {
+        const isLinked = await loginToFitnessPark(
+          fitnesspark_email,
+          fitnesspark_password
+        );
+        if (isLinked) {
+          handleSuccessfulLink(fitnesspark_email, fitnesspark_password);
+        } else {
+          setError("Revisa las credenciales.");
+        }
+      } catch (error) {
+        setError("Algo ha salido mal.");
+      }
+    },
+    [handleSuccessfulLink]
+  );
+
+  const deactivateUserOnServer = useCallback(async (userId: number) => {
+    const response = await fetch("/api/user/deactivate", {
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ newUserData }),
+      body: JSON.stringify({ userId }),
     });
 
     if (!response.ok) {
-      throw new Error("Failed to update user");
+      throw new Error("Failed to deactivate user");
     }
   }, []);
 
@@ -104,25 +109,35 @@ export default function ProfilePage() {
         );
       }
     }
-  }, [user, logout]);
+  }, [user, logout, deactivateUserOnServer, handleCloseConfirmationModal]);
 
-  const deactivateUserOnServer = useCallback(async (userId: number) => {
-    const response = await fetch("/api/user/deactivate", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ userId }),
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to deactivate user");
+  useEffect(() => {
+    if (user) {
+      checkFitnessParkLink(user).then((isLinked) => {
+        setModalOpen(!isLinked);
+        if (user.isLinked !== isLinked) {
+          updateUserData({ ...user, isLinked });
+        }
+        setIsLoading(false); // Termina la carga
+      });
+    } else {
+      setIsLoading(false); // Termina la carga si no hay usuario
     }
-  }, []);
+  }, [user, updateUserData]);
+
+  useEffect(() => {
+    if (user) {
+      setIsLoading(false); // Termina la carga cuando el usuario está disponible
+    }
+  }, [user]);
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100 dark:bg-gray-800 dark:text-white w-full">
-      {user ? (
+      {isLoading || !user ? ( // Muestra el spinner si está cargando o si no hay usuario
+        <div className="flex flex-grow items-center justify-center">
+          <LoadingSpinner size={80} /> {/* Ajusta el tamaño del spinner */}
+        </div>
+      ) : (
         <div className="flex flex-col flex-grow w-full px-4 sm:px-8">
           <header className="flex items-center justify-between py-4 mb-4">
             <h1 className="m-2 flex-grow text-gray-400">
@@ -143,7 +158,7 @@ export default function ProfilePage() {
           <Modal isOpen={isModalOpen}>
             <UserForm
               onSubmit={handleLinkFitnessPark}
-              formTitle="Vincula tu cuenta de FitnessPark"
+              formTitle="Vincula tu cuenta de Fitness Park"
               submitButtonLabel="Conectar"
               error={error}
             />
@@ -170,10 +185,6 @@ export default function ProfilePage() {
             </button>
           </div>
         </div>
-      ) : (
-        <h1 className="flex flex-grow items-center justify-center text-3xl font-bold px-4 py-2 w-full">
-          Cargando...
-        </h1>
       )}
       <Footer isLinked={user?.isLinked} />
     </div>
