@@ -4,7 +4,7 @@ import { UserProps } from "@/model/UserData";
 import { sql } from "@vercel/postgres";
 
 export async function checkFitnessParkLink(user: UserProps): Promise<boolean> {
-  if (!user.fitnesspark_email || !user.fitnesspark_email) {
+  if (!user.fitnesspark_email || !user.fitnesspark_password) {
     return false;
   }
 
@@ -61,12 +61,28 @@ export async function updateUserFitnessParkLink(
 ): Promise<void> {
   try {
     await sql`
-        UPDATE users
-        SET is_linked_with_fitnesspark = ${isLinked}
-        WHERE user_id = ${userId} and is_active = true;
-      `;
+      UPDATE users
+      SET is_linked_with_fitnesspark = ${isLinked}
+      WHERE user_id = ${userId} and is_active = true;
+    `;
   } catch (error) {
     console.error("Error updating user Fitness Park link:", error);
     throw new Error("Failed to update user Fitness Park link");
+  }
+}
+
+export async function unlinkFromFitnessPark(userId: number): Promise<void> {
+  try {
+    await sql`
+      UPDATE users
+      SET
+        fitnesspark_email = NULL,
+        fitnesspark_password = NULL,
+        is_linked_with_fitnesspark = false
+      WHERE user_id = ${userId} and is_active = true;
+    `;
+  } catch (error) {
+    console.error("Error unlinking from Fitness Park:", error);
+    throw new Error("Failed to unlink from Fitness Park");
   }
 }

@@ -11,6 +11,7 @@ import LoadingSpinner from "@/components/ui/loading-spinner"; // Importa el spin
 import {
   checkFitnessParkLink,
   loginToFitnessPark,
+  unlinkFromFitnessPark, // Importa la función para desvincular
 } from "@/services/FitnessParkService";
 import { UserProps } from "@/model/UserData";
 
@@ -37,6 +38,8 @@ export default function ProfilePage() {
 
   const handleSuccessfulLink = useCallback(
     async (fitnesspark_email: string, fitnesspark_password: string) => {
+      setIsLoading(true);
+      setError("");
       if (user) {
         try {
           const newUserData = {
@@ -50,6 +53,8 @@ export default function ProfilePage() {
           setModalOpen(false);
         } catch (error) {
           setError("No se pudo actualizar el usuario.");
+        } finally {
+          setIsLoading(false);
         }
       }
     },
@@ -58,6 +63,8 @@ export default function ProfilePage() {
 
   const handleLinkFitnessPark = useCallback(
     async (fitnesspark_email: string, fitnesspark_password: string) => {
+      setIsLoading(true);
+      setError("");
       try {
         const isLinked = await loginToFitnessPark(
           fitnesspark_email,
@@ -70,10 +77,34 @@ export default function ProfilePage() {
         }
       } catch (error) {
         setError("Algo ha salido mal.");
+      } finally {
+        setIsLoading(false);
       }
     },
     [handleSuccessfulLink]
   );
+
+  const handleUnlinkFitnessPark = useCallback(async () => {
+    setIsLoading(true);
+    setError("");
+    if (user) {
+      try {
+        await unlinkFromFitnessPark(user.id);
+        updateUserData({
+          ...user,
+          isLinked: false,
+          fitnesspark_email: "",
+          fitnesspark_password: "",
+        });
+        alert("Cuenta de Fitness Park desvinculada.");
+      } catch (error) {
+        setError("No se pudo desvincular la cuenta de Fitness Park.");
+        alert("No se pudo desvincular la cuenta de Fitness Park.");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  }, [user, updateUserData]);
 
   const deactivateUserOnServer = useCallback(async (userId: number) => {
     const response = await fetch("/api/user/deactivate", {
@@ -98,6 +129,8 @@ export default function ProfilePage() {
   }, []);
 
   const handleConfirmDeactivation = useCallback(async () => {
+    setIsLoading(true); // Activar spinner
+    setError("");
     if (user) {
       try {
         await deactivateUserOnServer(user.id);
@@ -107,6 +140,11 @@ export default function ProfilePage() {
         setError(
           "No se pudo desactivar la cuenta. Por favor, verifica tu contraseña."
         );
+        alert(
+          "No se pudo desactivar la cuenta. Por favor, verifica tu contraseña."
+        );
+      } finally {
+        setIsLoading(false); // Desactivar spinner
       }
     }
   }, [user, logout, deactivateUserOnServer, handleCloseConfirmationModal]);
@@ -176,12 +214,18 @@ export default function ProfilePage() {
               error={error}
             />
           </Modal>
-          <div className="flex justify-end px-4 py-2 mb-2">
+          <div className="flex justify-end px-4 py-2 mb-2 space-x-2">
+            <button
+              onClick={handleUnlinkFitnessPark}
+              className="px-4 py-2 text-sm rounded-lg border border-yellow-500 shadow-sm bg-yellow-500 text-white hover:bg-yellow-600 transition duration-300"
+            >
+              Desconectar de Fitness Park
+            </button>
             <button
               onClick={handleOpenConfirmationModal}
               className="px-4 py-2 text-sm rounded-lg border border-red-500 shadow-sm bg-red-500 text-white hover:bg-red-600 transition duration-300"
             >
-              Desactivar cuenta
+              Borrar cuenta
             </button>
           </div>
         </div>
