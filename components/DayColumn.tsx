@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Button } from "./ui/button";
-import { Input } from "./ui/input";
 import { XIcon } from "./ui/x-icon";
 import {
   addReservation,
@@ -9,6 +8,7 @@ import {
 import { useUser } from "@/providers/UserContext";
 import ActivitySelect from "./activity-select";
 import TimeInput from "./time-input";
+import GradientButton from "./ui/gradient-button";
 
 interface Session {
   id: number;
@@ -46,13 +46,10 @@ const DayColumn: React.FC<DayColumnProps> = ({ day, userId }) => {
     setIsAddingSession((prev) => !prev);
   };
 
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-    field: string
-  ) => {
+  const handleInputChange = (field: string, value: string) => {
     setNewSession((prev) => ({
       ...prev,
-      [field]: e.target.value,
+      [field]: value,
     }));
   };
 
@@ -98,41 +95,41 @@ const DayColumn: React.FC<DayColumnProps> = ({ day, userId }) => {
   };
 
   return (
-    <div className="flex flex-col items-center m-1 p-4 min-h-[300px] w-full sm:w-auto bg-white dark:bg-gray-800 rounded-lg shadow-md">
+    <div className="flex flex-col items-center m-1 p-4 min-h-[250px] sm:min-h-[400px] w-full sm:w-auto bg-white dark:bg-gray-800 rounded-lg shadow-md">
       <div className="font-medium text-gray-700 dark:text-gray-300">
         {day.name}
       </div>
       <div className="mt-2">
         {isAddingSession ? (
-          <form className="flex flex-col space-y-2" onSubmit={addSession}>
-            <ActivitySelect
-              value={newSession.activity}
-              onChange={(e) => handleInputChange(e, "activity")}
-              required
-            />
-            <TimeInput
-              value={newSession.time}
-              onChange={(e) => handleInputChange(e, "time")}
-              required
-            />
-            <div className="flex space-x-4">
-              <Button type="submit" className="flex-1 min-w-[80px]">
-                Añadir
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                className="flex-1 min-w-[80px]"
-                onClick={cancelAddSession}
-              >
-                Cancelar
-              </Button>
-            </div>
-          </form>
+          <div className="w-full p-4 bg-white dark:bg-gray-700 rounded-lg shadow-lg transition-transform transform hover:-translate-y-1">
+            <form className="flex flex-col space-y-2" onSubmit={addSession}>
+              <ActivitySelect
+                value={newSession.activity}
+                onChange={(e) => handleInputChange("activity", e.target.value)}
+                required
+              />
+              <TimeInput
+                value={newSession.time}
+                onChange={(value) => handleInputChange("time", value)}
+                required
+              />
+              <div className="flex space-x-4">
+                <Button type="submit" className="flex-1 min-w-[80px]">
+                  Añadir
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="flex-1 min-w-[80px]"
+                  onClick={cancelAddSession}
+                >
+                  Cancelar
+                </Button>
+              </div>
+            </form>
+          </div>
         ) : (
-          <Button size="sm" variant="outline" onClick={toggleAddingSession}>
-            Añadir Sesión
-          </Button>
+          <GradientButton onClick={toggleAddingSession} text="Añadir Sesión" />
         )}
       </div>
       <div className="mt-4 grid grid-cols-1 gap-4 w-full min-w-[200px]">
