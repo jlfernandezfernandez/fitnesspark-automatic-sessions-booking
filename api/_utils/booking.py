@@ -44,7 +44,7 @@ def book(key, email, activity, time):
     if session_info:
         session_name, session_hour, session_id = session_info
         print(f"Reservando sesión {session_name} a las {session_hour} para {email}")
-        #  book_session(cookies, session_id)
+        book_session(cookies, session_id)
     else:
         print(f"No se ha encontrado ninguna sesión para {email}")
 
