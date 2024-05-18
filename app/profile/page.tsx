@@ -13,7 +13,7 @@ import {
   unlinkFromFitnessPark,
 } from "@/services/FitnessParkService";
 import { UserProps } from "@/model/UserData";
-import Footer from "@/components/footer";
+import Footer from "@/components/ui/footer";
 
 export default function ProfilePage() {
   const [error, setError] = useState<string>("");
