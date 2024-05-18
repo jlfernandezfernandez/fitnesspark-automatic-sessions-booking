@@ -14,6 +14,7 @@ import {
 } from "@/services/FitnessParkService";
 import { UserProps } from "@/model/UserData";
 import Footer from "@/components/ui/footer";
+import FitnessParkLogo from "@/components/fitnesspark-logo";
 
 export default function ProfilePage() {
   const [error, setError] = useState<string>("");
@@ -177,19 +178,14 @@ export default function ProfilePage() {
         </div>
       ) : (
         <div className="flex flex-col flex-grow w-full px-4 sm:px-8">
-          <header className="flex items-center justify-between py-4 mb-4">
-            <h1 className="m-2 flex-grow text-gray-400">
-              <span className="text-3xl md:text-5xl font-bold italic animate-text bg-gradient-to-r from-teal-500 via-purple-500 to-orange-500 bg-clip-text text-transparent pr-2">
-                Autobooking
-              </span>
-            </h1>
+          <div className="flex justify-end space-x-2 mt-4 mb-3">
             <button
               className="px-4 py-2 text-sm rounded-lg border border-gray-300 shadow-sm bg-white text-gray-700 hover:bg-gray-200 transition duration-300"
               onClick={logout}
             >
               Desconectar
             </button>
-          </header>
+          </div>
           <div className="flex-grow flex items-center justify-center mb-2">
             <WeeklyView reservations={reservations} userId={user.id} />
           </div>
@@ -219,7 +215,7 @@ export default function ProfilePage() {
               onClick={handleUnlinkFitnessPark}
               className="px-4 py-2 text-sm rounded-lg border border-yellow-500 shadow-sm bg-yellow-500 text-white hover:bg-yellow-600 transition duration-300"
             >
-              Desconectar de Fitness Park
+              Desvincular
             </button>
             <button
               onClick={handleOpenConfirmationModal}
