@@ -52,13 +52,10 @@ export default function WeeklyView({ reservations, userId }: WeeklyViewProps) {
   );
 
   return (
-    <div className="flex flex-col items-center justify-center w-full h-full bg-white dark:bg-gray-600 dark:text-white rounded-xl shadow-xl p-3">
-      <div className="w-full ml-2 mb-1">
-        <h2 className="text-base font-semibold">Planning Semanal</h2>
-        <h3 className="text-xs text-gray-400">lunes - viernes</h3>
-      </div>
-      <div className="w-full h-full overflow-x-auto overflow-y-hidden mb-3">
-        <div className="flex justify-start space-x-2 sm:space-x-4 lg:space-x-6 mx-auto h-full px-2">
+    <div className="flex flex-col items-center justify-center w-full h-full bg-white dark:bg-gray-600 dark:text-white rounded-xl shadow-xl p-2">
+      <div className="w-full ml-4"></div>
+      <div className="w-full h-full overflow-x-auto overflow-y-hidden">
+        <div className="flex justify-start space-x-2 sm:space-x-4 lg:space-x-6 mx-auto h-full p-1">
           {daysOfWeek.map((day) => (
             <div key={day.id} className="flex-1 min-w-[250px]">
               <DayColumn day={day} userId={userId} />

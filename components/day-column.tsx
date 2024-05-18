@@ -98,7 +98,7 @@ const DayColumn: React.FC<DayColumnProps> = ({ day, userId }) => {
   const sessionsCount = day.sessions.length;
 
   return (
-    <div className="relative flex flex-col items-center m-1 p-4 sm:p-6 min-h-[450px] sm:min-h-[500px] w-full sm:w-auto bg-gray-100 dark:bg-gray-800 rounded-xl dark:text-white">
+    <div className="relative flex flex-col items-center m-1 p-3 sm:p-6 min-h-[450px] sm:min-h-[500px] w-full sm:w-auto bg-gray-100 dark:bg-gray-800 rounded-xl dark:text-white">
       <div className="flex justify-between items-center w-full">
         <div className="font-medium text-gray-700 dark:text-gray-300">
           {day.name}
