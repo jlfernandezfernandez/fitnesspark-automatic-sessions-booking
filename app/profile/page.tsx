@@ -4,7 +4,6 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useUser } from "@/providers/UserContext";
 import UserForm from "@/components/user-form";
 import Modal from "@/components/Modal";
-import Footer from "@/components/footer";
 import DeactivationForm from "@/components/deactivation-form";
 import WeeklyView from "@/components/WeeklyView";
 import LoadingSpinner from "@/components/ui/loading-spinner";
@@ -14,6 +13,7 @@ import {
   unlinkFromFitnessPark,
 } from "@/services/FitnessParkService";
 import { UserProps } from "@/model/UserData";
+import Footer from "@/components/footer";
 
 export default function ProfilePage() {
   const [error, setError] = useState<string>("");
