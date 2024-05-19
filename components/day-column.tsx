@@ -65,7 +65,8 @@ const DayColumn: React.FC<DayColumnProps> = ({ day, userId }) => {
         const response = await addReservation({
           userId,
           dayOfWeek: day.id,
-          ...newSession,
+          activity: newSession.activity,
+          time: newSession.time,
         });
 
         if (response.status === 200 && response.reservation) {
