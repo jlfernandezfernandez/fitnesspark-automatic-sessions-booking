@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
 import UserForm from "@/components/user-form";
 import FitnessParkLogo from "@/components/fitnesspark-logo";
-import { ArrowLeftCircle, ArrowRightCircle } from "lucide-react";
 
 interface CarouselModalProps {
   isOpen: boolean;
@@ -18,34 +16,35 @@ export function CarouselModal({
   handleLinkFitnessPark,
 }: CarouselModalProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
-
   const slides = [
     {
       content: (
-        <div className="flex flex-col justify-center items-center space-y-4 p-4 w-full h-full">
-          <div className="mb-4 font-semibold text-center">
-            <h1 className="lg:text-5xl text-2xl animate-text bg-gradient-to-r from-teal-500 via-purple-500 to-orange-500 bg-clip-text text-transparent pb-2">
-              Autobooking
-              <span className="lg:text-lg text-base italic text-gray-fitnesspark font-cactus mx-1">
-                |
-              </span>
-              <FitnessParkLogo
-                size="lg:text-xl text-lg"
-                underlineOffset="underline-offset-4"
-              />
-            </h1>
+        <div className="flex flex-col justify-center items-center space-y-4 p-1 w-full h-full">
+          <div>
+            <div className="mb-4 font-semibold text-center">
+              <h1 className="lg:text-5xl text-2xl animate-text bg-gradient-to-r from-teal-500 via-purple-500 to-orange-500 bg-clip-text text-transparent pb-2">
+                Autobooking
+                <span className="lg:text-lg text-base italic text-gray-fitnesspark font-cactus">
+                  |
+                </span>
+                <FitnessParkLogo
+                  size="lg:text-xl text-lg"
+                  underlineOffset="underline-offset-4"
+                />
+              </h1>
+            </div>
+            <p className="text-gray-500 dark:text-gray-400 text-center text-base lg:text-lg">
+              <strong>Fitness Park</strong> utiliza los servicios de{" "}
+              <strong>Virtuagym</strong>. Para poder realizar las reservas
+              automáticas necesitamos vincularnos con tu cuenta de Virtuagym.
+            </p>
           </div>
-          <p className="text-gray-500 dark:text-gray-400 text-center text-base lg:text-lg">
-            <strong>Fitness Park</strong> utiliza los servicios de{" "}
-            <strong>Virtuagym</strong>. Para poder realizar las reservas
-            automáticas necesitamos vincularnos con tu cuenta de Virtuagym.
-          </p>
         </div>
       ),
     },
     {
       content: (
-        <div className="flex flex-col justify-center items-center space-y-4 p-4 w-full h-full">
+        <div className="flex flex-col justify-center items-center space-y-4 p-1 w-full h-full">
           <p className="text-gray-500 dark:text-gray-400 text-center text-base lg:text-lg">
             Si no has cambiado tu contraseña de <strong>Fitness Park</strong>,
             puedes utilizar esas mismas credenciales. Si no, puedes recuperarlas
@@ -64,11 +63,8 @@ export function CarouselModal({
     },
     {
       content: (
-        <div className="flex flex-col justify-center items-center space-y-4 p-4 w-full h-full">
+        <div className="flex flex-col justify-center items-center space-y-4 p-1 w-full h-full">
           <div className="space-y-2 text-center">
-            <h2 className="lg:text-4xl text-2xl font-bold">
-              Vincula tu cuenta
-            </h2>
             <p className="text-gray-500 dark:text-gray-400 text-base lg:text-lg">
               Ingresa tu <strong>email</strong> y <strong>contraseña</strong>{" "}
               para vincular tu cuenta de <strong>Fitness Park</strong>.
@@ -107,23 +103,65 @@ export function CarouselModal({
   return (
     <div className="fixed inset-0 flex items-center justify-center text-center z-50 overflow-y-auto px-2">
       <div className="fixed inset-0 bg-black opacity-50"></div>
-      <div className="relative bg-white dark:bg-gray-800 dark:text-white rounded-lg shadow-lg p-4 sm:p-6 max-w-lg w-full sm:max-w-2xl sm:h-[450px] h-auto">
-        <div className="relative flex items-center justify-between h-full">
-          <Button
-            onClick={prevSlide}
-            className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-transparent p-1"
-          >
-            <ArrowLeftCircle className="h-8 w-8 sm:h-10 sm:w-10 text-gray-500 hover:text-gray-700 opacity-75" />
-          </Button>
-          <div className="flex-grow mx-2 sm:mx-4 h-full flex justify-center items-center">
-            {slides[currentSlide].content}
+      <div className="relative bg-white dark:bg-gray-800 dark:text-white rounded-lg shadow-lg max-w-lg w-full sm:max-w-2xl sm:h-[450px] h-auto p-4">
+        <div
+          className="absolute inset-y-0 left-0 flex items-center justify-center w-10 cursor-pointer transition-opacity duration-300"
+          onClick={prevSlide}
+        >
+          <div className="flex items-center justify-center w-full h-full opacity-50 hover:opacity-100">
+            <span className="sr-only">Previous slide</span>
+            <svg
+              className="w-6 h-6 text-gray-500 hover:text-white"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
           </div>
-          <Button
-            onClick={nextSlide}
-            className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-transparent p-1"
-          >
-            <ArrowRightCircle className="h-8 w-8 sm:h-10 sm:w-10 text-gray-500 hover:text-gray-700 opacity-75" />
-          </Button>
+        </div>
+        <div
+          className="absolute inset-y-0 right-0 flex items-center justify-center w-10 cursor-pointer transition-opacity duration-300"
+          onClick={nextSlide}
+        >
+          <div className="flex items-center justify-center w-full h-full opacity-50 hover:opacity-100">
+            <span className="sr-only">Next slide</span>
+            <svg
+              className="w-6 h-6 text-gray-500 hover:text-white"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
+          </div>
+        </div>
+        <div className="flex-grow mx-4 h-full flex justify-center items-center transition-all">
+          {slides[currentSlide].content}
+        </div>
+        <div className="absolute bottom-2 left-0 right-0 flex justify-center space-x-2">
+          {slides.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentSlide(index)}
+              className={`h-2 w-2 rounded-full ${
+                currentSlide === index
+                  ? "bg-gray-800 dark:bg-white"
+                  : "bg-gray-400"
+              }`}
+              aria-label={`Slide ${index + 1}`}
+            />
+          ))}
         </div>
       </div>
     </div>
