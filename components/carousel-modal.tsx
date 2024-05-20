@@ -111,7 +111,7 @@ export function CarouselModal({
         <div className="relative flex items-center justify-between h-full">
           <Button
             onClick={prevSlide}
-            className="absolute left-1 sm:left-2 top-1/2 transform -translate-y-1/2 bg-transparent p-1"
+            className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-transparent p-1"
           >
             <ArrowLeftCircle className="h-8 w-8 sm:h-10 sm:w-10 text-gray-500 hover:text-gray-700 opacity-75" />
           </Button>
@@ -120,7 +120,7 @@ export function CarouselModal({
           </div>
           <Button
             onClick={nextSlide}
-            className="absolute right-1 sm:right-2 top-1/2 transform -translate-y-1/2 bg-transparent p-1"
+            className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-transparent p-1"
           >
             <ArrowRightCircle className="h-8 w-8 sm:h-10 sm:w-10 text-gray-500 hover:text-gray-700 opacity-75" />
           </Button>
