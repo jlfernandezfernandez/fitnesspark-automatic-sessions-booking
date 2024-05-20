@@ -1,5 +1,5 @@
 requests
 requests_html
 pyyaml
-lxml
+lxml_html_clean
 psycopg2-binary
