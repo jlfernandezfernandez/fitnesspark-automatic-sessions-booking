@@ -24,7 +24,7 @@ export function CarouselModal({
       content: (
         <div className="flex flex-col justify-center items-center space-y-4 p-4 w-full h-full">
           <div className="mb-4 font-semibold text-center">
-            <h1 className="lg:text-5xl text-3xl animate-text bg-gradient-to-r from-teal-500 via-purple-500 to-orange-500 bg-clip-text text-transparent pb-2">
+            <h1 className="lg:text-5xl text-2xl animate-text bg-gradient-to-r from-teal-500 via-purple-500 to-orange-500 bg-clip-text text-transparent pb-2">
               Autobooking
               <span className="lg:text-lg text-base italic text-gray-fitnesspark font-cactus mx-1">
                 |
@@ -106,20 +106,20 @@ export function CarouselModal({
   return (
     <div className="fixed inset-0 flex items-center justify-center text-center z-50 overflow-y-auto px-2">
       <div className="fixed inset-0 bg-black opacity-50"></div>
-      <div className="relative bg-white dark:bg-gray-800 dark:text-white rounded-lg shadow-lg p-6 max-w-lg w-full sm:max-w-2xl sm:h-[450px] h-auto">
+      <div className="relative bg-white dark:bg-gray-800 dark:text-white rounded-lg shadow-lg p-2 max-w-lg w-full sm:max-w-2xl sm:h-[450px] h-auto">
         <div className="relative flex items-center justify-between h-full">
           <Button
             onClick={prevSlide}
-            className="absolute left-2 sm:left-8 top-1/2 transform -translate-y-1/2 bg-transparent p-1"
+            className="absolute left-1 sm:left-2 top-1/2 transform -translate-y-1/2 bg-transparent p-1"
           >
             <ArrowLeftCircle className="h-8 w-8 sm:h-10 sm:w-10 text-gray-500 hover:text-gray-700 opacity-75" />
           </Button>
-          <div className="flex-grow mx-4 sm:mx-16 h-full flex justify-center items-center">
+          <div className="flex-grow mx-2 sm:mx-4 h-full flex justify-center items-center">
             {slides[currentSlide].content}
           </div>
           <Button
             onClick={nextSlide}
-            className="absolute right-2 sm:right-8 top-1/2 transform -translate-y-1/2 bg-transparent p-1"
+            className="absolute right-1 sm:right-2 top-1/2 transform -translate-y-1/2 bg-transparent p-1"
           >
             <ArrowRightCircle className="h-8 w-8 sm:h-10 sm:w-10 text-gray-500 hover:text-gray-700 opacity-75" />
           </Button>
