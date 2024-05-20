@@ -2,8 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { useUser } from "@/providers/UserContext";
-import UserForm from "@/components/user-form";
-import Modal from "@/components/Modal";
+import { CarouselModal } from "@/components/carousel-modal";
 import DeactivationForm from "@/components/deactivation-form";
 import WeeklyView from "@/components/WeeklyView";
 import LoadingSpinner from "@/components/ui/loading-spinner";
@@ -15,6 +14,7 @@ import {
 } from "@/services/FitnessParkService";
 import { UserProps } from "@/model/UserData";
 import Footer from "@/components/ui/footer";
+import Modal from "@/components/Modal";
 
 export default function ProfilePage() {
   const [error, setError] = useState<string>("");
@@ -208,14 +208,12 @@ export default function ProfilePage() {
             </Card>
             {/* Aquí se pueden agregar más tarjetas */}
           </div>
-          <Modal isOpen={isModalOpen}>
-            <UserForm
-              onSubmit={handleLinkFitnessPark}
-              formTitle="Vincula tu cuenta de Fitness Park"
-              submitButtonLabel="Conectar"
-              error={error}
-            />
-          </Modal>
+          <CarouselModal
+            isOpen={isModalOpen}
+            setIsOpen={setModalOpen}
+            error={error}
+            handleLinkFitnessPark={handleLinkFitnessPark}
+          />
           <Modal
             isOpen={isConfirmationModalOpen}
             closeButtonActive

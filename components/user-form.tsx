@@ -4,7 +4,7 @@ import Link from "next/link";
 
 interface UserFormProps {
   onSubmit: (email: string, password: string) => void;
-  formTitle: string;
+  formTitle?: string;
   submitButtonLabel: string;
   error?: string;
   isRegisterForm?: boolean;
@@ -37,7 +37,9 @@ export default function UserForm({
 
   return (
     <div className="mx-auto max-w-md bg-white dark:bg-gray-800 dark:text-white text-black p-6 rounded-lg shadow-lg">
-      <h1 className="text-3xl font-semibold mb-6 text-center">{formTitle}</h1>
+      {formTitle && (
+        <h1 className="text-3xl font-semibold mb-6 text-center">{formTitle}</h1>
+      )}
       <form onSubmit={handleSubmit} className="flex flex-col space-y-4">
         <CustomInput
           label="Email"
