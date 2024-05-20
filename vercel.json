@@ -1,12 +1,12 @@
 {
-    "crons": [
-        {
-            "path": "/api/booking_worker_1",
-            "schedule": "0 19 * * *"
-        },
-        {
-            "path": "/api/booking_worker_2",
-            "schedule": "0 19 * * *"
-        }
-    ]
+  "crons": [
+    {
+      "path": "/api/book",
+      "schedule": "0 19 * * *"
+    },
+    {
+      "path": "/api/book",
+      "schedule": "0 20 * * *"
+    }
+  ]
 }
