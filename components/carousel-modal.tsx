@@ -36,9 +36,9 @@ export function CarouselModal({
             </h1>
           </div>
           <p className="text-gray-500 dark:text-gray-400 text-center text-base lg:text-lg">
-            Fitness Park utiliza los servicios de Virtuagym. Para poder realizar
-            las reservas automáticas necesitamos vincularnos con tu cuenta de
-            Virtuagym.
+            <strong>Fitness Park</strong> utiliza los servicios de{" "}
+            <strong>Virtuagym</strong>. Para poder realizar las reservas
+            automáticas necesitamos vincularnos con tu cuenta de Virtuagym.
           </p>
         </div>
       ),
@@ -47,8 +47,9 @@ export function CarouselModal({
       content: (
         <div className="flex flex-col justify-center items-center space-y-4 p-4 w-full h-full">
           <p className="text-gray-500 dark:text-gray-400 text-center text-base lg:text-lg">
-            Si no has cambiado tu contraseña de Fitness Park, puedes utilizar
-            esas mismas credenciales. Si no, puedes recuperarlas en:
+            Si no has cambiado tu contraseña de <strong>Fitness Park</strong>,
+            puedes utilizar esas mismas credenciales. Si no, puedes recuperarlas
+            en:
             <a
               href="https://virtuagym.com/resetpassword"
               target="_blank"
@@ -69,8 +70,8 @@ export function CarouselModal({
               Vincula tu cuenta
             </h2>
             <p className="text-gray-500 dark:text-gray-400 text-base lg:text-lg">
-              Ingresa tu email y contraseña para vincular tu cuenta de Fitness
-              Park.
+              Ingresa tu <strong>email</strong> y <strong>contraseña</strong>{" "}
+              para vincular tu cuenta de <strong>Fitness Park</strong>.
             </p>
           </div>
           <div className="w-full">
@@ -106,7 +107,7 @@ export function CarouselModal({
   return (
     <div className="fixed inset-0 flex items-center justify-center text-center z-50 overflow-y-auto px-2">
       <div className="fixed inset-0 bg-black opacity-50"></div>
-      <div className="relative bg-white dark:bg-gray-800 dark:text-white rounded-lg shadow-lg p-2 max-w-lg w-full sm:max-w-2xl sm:h-[450px] h-auto">
+      <div className="relative bg-white dark:bg-gray-800 dark:text-white rounded-lg shadow-lg p-4 sm:p-6 max-w-lg w-full sm:max-w-2xl sm:h-[450px] h-auto">
         <div className="relative flex items-center justify-between h-full">
           <Button
             onClick={prevSlide}
