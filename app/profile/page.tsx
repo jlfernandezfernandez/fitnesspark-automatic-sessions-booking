@@ -49,7 +49,7 @@ export default function ProfilePage() {
             fitnesspark_email,
             fitnesspark_password,
           };
-          console.log("update user: {newUserData}")
+          console.log("update user: ", newUserData)
           await updateUserOnServer(newUserData);
           updateUserData(newUserData);
           setModalOpen(false);
@@ -72,7 +72,7 @@ export default function ProfilePage() {
           fitnesspark_email,
           fitnesspark_password
         );
-        console.log("check if is linked: {isLinked}")
+        console.log("check if is linked: ", isLinked);
         if (isLinked) {
           await handleSuccessfulLink(fitnesspark_email, fitnesspark_password);
         } else {
