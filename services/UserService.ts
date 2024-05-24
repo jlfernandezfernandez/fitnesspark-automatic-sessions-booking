@@ -99,6 +99,8 @@ export async function register(email: string, password: string) {
 }
 
 export async function updateUser(newUserData: Partial<UserProps>) {
+  console.log("Updating user with data:", newUserData); // Agregar esta línea para registrar los datos que se están utilizando para la actualización
+  
   const { error } = userSchema.validate(newUserData);
   if (error) {
     console.error("Validation error:", error.details[0].message);
@@ -109,6 +111,7 @@ export async function updateUser(newUserData: Partial<UserProps>) {
     const { rows } = await sql`
       SELECT * FROM users WHERE user_id = ${newUserData.id} AND is_active = true;
     `;
+    console.log("Selected user:", rows); // Agregar esta línea para registrar el resultado de la consulta SELECT
 
     if (rows.length === 0) {
       return { error: "User not found", status: 404 };
@@ -123,6 +126,7 @@ export async function updateUser(newUserData: Partial<UserProps>) {
         fitnesspark_password = ${encodeBase64(newUserData.fitnesspark_password)}
       WHERE user_id = ${newUserData.id};
     `;
+    console.log("User updated successfully"); // Agregar esta línea para registrar que la actualización se realizó correctamente
 
     return { message: "User updated successfully", status: 200 };
   } catch (error) {
