@@ -2,12 +2,14 @@ import { ChevronDownIcon } from "lucide-react";
 import React from "react";
 
 interface ActivitySelectProps {
+  options: { label: string; value: string; key: string }[];
   value: string;
   onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   required?: boolean;
 }
 
 const ActivitySelect: React.FC<ActivitySelectProps> = ({
+  options,
   value,
   onChange,
   required = false,
@@ -24,11 +26,11 @@ const ActivitySelect: React.FC<ActivitySelectProps> = ({
         <option value="" disabled>
           Elige una clase
         </option>
-        <option value="BODY COMBAT">Body Combat</option>
-        <option value="BODY PUMP">Body Pump</option>
-        <option value="CYCLE PARK">Cycle Park</option>
-        <option value="CROSS TRAINING">Cross Training</option>
-        <option value="PILATES">Pilates</option>
+        {options.map((option) => (
+          <option key={option.key} value={option.value}>
+            {option.label}
+          </option>
+        ))}
       </select>
       <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
         <ChevronDownIcon className="w-5 h-5 text-gray-500 dark:text-gray-400" />

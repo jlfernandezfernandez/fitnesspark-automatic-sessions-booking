@@ -1,4 +1,4 @@
-import React, { useMemo, useCallback } from "react";
+import React, { useMemo, useCallback, useEffect, useState } from "react";
 import DayColumn from "./day-column";
 
 interface Session {
@@ -11,6 +11,7 @@ interface Day {
   id: string;
   name: string;
   sessions: Session[];
+  availableClasses: { name: string; time: string }[];
 }
 
 interface Reservation {
@@ -27,7 +28,50 @@ interface WeeklyViewProps {
 }
 
 export default function WeeklyView({ reservations, userId }: WeeklyViewProps) {
-  // Filtra las reservas por día
+  const [availableClasses, setAvailableClasses] = useState<
+    Record<string, { name: string; time: string }[]>
+  >({});
+
+  async function fetchAvailableClasses() {
+    try {
+      const response = await fetch("/api/sesions", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await response.json();
+      const groupedClasses = data.reduce(
+        (
+          acc: {
+            [x: string]: { name: string; time: string; instructor: string }[];
+          },
+          classInfo: {
+            day: string;
+            name: string;
+            time: string;
+            instructor: string;
+          }
+        ) => {
+          const { day, name, time, instructor } = classInfo;
+          if (!acc[day]) {
+            acc[day] = [];
+          }
+          acc[day].push({ name, time, instructor });
+          return acc;
+        },
+        {}
+      );
+      setAvailableClasses(groupedClasses);
+    } catch (error) {
+      console.error("Failed to fetch available classes:", error);
+    }
+  }
+
+  useEffect(() => {
+    fetchAvailableClasses();
+  }, []);
+
   const getSessionsForDay = useCallback(
     (day: string): Session[] => {
       return reservations
@@ -41,16 +85,40 @@ export default function WeeklyView({ reservations, userId }: WeeklyViewProps) {
     [reservations]
   );
 
-  // Define los días de la semana y sus sesiones
   const daysOfWeek: Day[] = useMemo(
     () => [
-      { id: "mon", name: "Lunes", sessions: getSessionsForDay("mon") },
-      { id: "tue", name: "Martes", sessions: getSessionsForDay("tue") },
-      { id: "wed", name: "Miércoles", sessions: getSessionsForDay("wed") },
-      { id: "thu", name: "Jueves", sessions: getSessionsForDay("thu") },
-      { id: "fri", name: "Viernes", sessions: getSessionsForDay("fri") },
+      {
+        id: "mon",
+        name: "Lunes",
+        sessions: getSessionsForDay("mon"),
+        availableClasses: availableClasses["mon"] || [],
+      },
+      {
+        id: "tue",
+        name: "Martes",
+        sessions: getSessionsForDay("tue"),
+        availableClasses: availableClasses["tue"] || [],
+      },
+      {
+        id: "wed",
+        name: "Miércoles",
+        sessions: getSessionsForDay("wed"),
+        availableClasses: availableClasses["wed"] || [],
+      },
+      {
+        id: "thu",
+        name: "Jueves",
+        sessions: getSessionsForDay("thu"),
+        availableClasses: availableClasses["thu"] || [],
+      },
+      {
+        id: "fri",
+        name: "Viernes",
+        sessions: getSessionsForDay("fri"),
+        availableClasses: availableClasses["fri"] || [],
+      },
     ],
-    [getSessionsForDay]
+    [getSessionsForDay, availableClasses]
   );
 
   return (

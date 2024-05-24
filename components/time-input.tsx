@@ -4,12 +4,16 @@ interface TimeInputProps {
   value: string;
   onChange: (value: string) => void;
   required?: boolean;
+  options: string[];
+  disabled?: boolean;
 }
 
 const TimeInput: React.FC<TimeInputProps> = ({
   value,
   onChange,
   required = false,
+  options = [],
+  disabled = false,
 }) => {
   const [showOptions, setShowOptions] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -27,17 +31,6 @@ const TimeInput: React.FC<TimeInputProps> = ({
     };
   }, []);
 
-  const generateTimeOptions = () => {
-    const times = [];
-    for (let hour = 9; hour <= 21; hour++) {
-      const hourStr = hour.toString().padStart(2, "0");
-      times.push(`${hourStr}:00`, `${hourStr}:30`);
-    }
-    return times;
-  };
-
-  const times = generateTimeOptions();
-
   const handleChange = (time: string) => {
     onChange(time);
     setShowOptions(false);
@@ -47,11 +40,9 @@ const TimeInput: React.FC<TimeInputProps> = ({
     <div ref={ref} className="relative w-full">
       <div
         className={`flex items-center bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white focus-within:ring-yellow-fitnesspark focus-within:border-yellow-fitnesspark cursor-pointer ${
-          showOptions
-            ? " ring-yellow-fitnesspark border-yellow-fitnesspark"
-            : ""
-        }`}
-        onClick={() => setShowOptions(!showOptions)}
+          showOptions ? "ring-yellow-fitnesspark border-yellow-fitnesspark" : ""
+        } ${disabled ? "cursor-not-allowed opacity-50" : ""}`}
+        onClick={() => !disabled && setShowOptions(!showOptions)}
       >
         <div className="pl-1 flex-1">{value || "Seleccionar hora"}</div>
         <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
@@ -72,7 +63,7 @@ const TimeInput: React.FC<TimeInputProps> = ({
       </div>
       {showOptions && (
         <div className="absolute z-10 mt-1 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg max-h-32 sm:max-h-48 overflow-y-auto w-full">
-          {times.map((time) => (
+          {options.map((time) => (
             <div
               key={time}
               className="cursor-pointer text-sm px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-600 dark:text-white"
