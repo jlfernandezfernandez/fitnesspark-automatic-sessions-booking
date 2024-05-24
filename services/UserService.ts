@@ -100,7 +100,7 @@ export async function register(email: string, password: string) {
 
 export async function updateUser(newUserData: Partial<UserProps>) {
   console.log("Updating user with data:", newUserData); // Agregar esta línea para registrar los datos que se están utilizando para la actualización
-  
+
   const { error } = userSchema.validate(newUserData);
   if (error) {
     console.error("Validation error:", error.details[0].message);
@@ -120,7 +120,6 @@ export async function updateUser(newUserData: Partial<UserProps>) {
     await sql`
       UPDATE users
       SET
-        email = ${newUserData.email},
         is_linked_with_fitnesspark = ${newUserData.isLinked},
         fitnesspark_email = ${newUserData.fitnesspark_email},
         fitnesspark_password = ${encodeBase64(newUserData.fitnesspark_password)}
