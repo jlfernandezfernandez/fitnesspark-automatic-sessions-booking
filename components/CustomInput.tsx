@@ -55,7 +55,7 @@ export default function CustomInput({
           focus || value
             ? `text-xs transform -translate-y-3.5 translate-x-3 text-yellow-fitnesspark ${bgColor}`
             : "text-base dark:text-white text-gray-500 pl-5 pt-1"
-        }`}
+        } pointer-events-none`}
         style={{ top: "6px" }}
       >
         {label}
