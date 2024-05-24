@@ -1,32 +1,5 @@
-import datetime
-import yaml
-
 from api._utils.virtual_gym.client import login
 from api._utils.sessions.client import get_sessions, book_session
-
-days_of_week = [
-    "monday",
-    "tuesday",
-    "wednesday",
-    "thursday",
-    "friday",
-    "saturday",
-    "sunday",
-]
-
-
-def load_config():
-    with open("configmap.yml", "r", encoding="utf-8") as file:
-        config = yaml.safe_load(file)
-    return config
-
-
-def get_desired_day():
-    current_date = datetime.datetime.now()
-    desired_date = current_date + datetime.timedelta(days=5)
-    desired_day = desired_date.weekday()
-
-    return days_of_week[desired_day]
 
 
 def get_session_to_book(sessions, activity, time):

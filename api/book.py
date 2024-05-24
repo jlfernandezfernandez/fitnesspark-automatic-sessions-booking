@@ -14,48 +14,45 @@ class handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         logging.info("Handling GET request")
-        weekday = self.calculate_target_weekday(5)
-        logging.info(f"Calculated weekday: {weekday}")
+        week_start_date = self.get_week_start_date()
+        logging.info(f"Week start date: {week_start_date}")
 
-        if weekday not in self.valid_days:
-            logging.warning(f"Weekday {weekday} not in valid days")
-            self.send_no_bookings_response()
-            return
-
-        col_names, records = self.fetch_reservations(weekday)
+        col_names, records = self.fetch_reservations()
         if records:
             logging.info(f"Found {len(records)} reservations")
             formatted_data = self.format_reservations(col_names, records)
-            logging.info(
-                f"Formatted data ready for booking: {formatted_data}"
-            )  # Log de toda la lista formatted_data
+            logging.info(f"Formatted data ready for booking: {formatted_data}")
             for reservation in formatted_data:
-                logging.info(
-                    f"Processing reservation for {reservation['fitnesspark_email']} - Activity: {reservation['activity']} at {reservation['time']}"
-                )
-                self.book_reservation(reservation)
+                if not self.is_already_booked(reservation["id"], week_start_date):
+                    logging.info(
+                        f"Processing reservation for {reservation['fitnesspark_email']} - Activity: {reservation['activity']} at {reservation['time']}"
+                    )
+                    self.book_reservation(reservation)
+                    self.mark_as_booked(
+                        reservation["id"], reservation["userId"], week_start_date
+                    )
         else:
             logging.info("No reservations found")
         self.send_success_response()
 
-    def calculate_target_weekday(self, days_ahead):
-        target_date = datetime.now() + timedelta(days=days_ahead)
-        weekday = target_date.strftime("%a").lower()
-        logging.debug(f"Target date: {target_date}, Weekday: {weekday}")
-        return weekday
+    def get_week_start_date(self):
+        today = datetime.now()
+        start = today - timedelta(days=today.weekday())  # Lunes de la semana actual
+        return start.date()
 
-    def fetch_reservations(self, weekday):
-        logging.info(f"Fetching reservations for weekday: {weekday}")
+    def fetch_reservations(self):
+        logging.info("Fetching reservations")
         connection = self.create_db_connection()
         with connection.cursor() as cursor:
             cursor.execute(
                 """
-                SELECT reservations.*, users.fitnesspark_email, users.fitnesspark_password FROM reservations
+                SELECT reservations.*, users.fitnesspark_email, users.fitnesspark_password 
+                FROM reservations
                 JOIN users ON reservations.user_id = users.user_id
-                WHERE users.is_active = TRUE AND users.is_linked_with_fitnesspark = TRUE
-                AND reservations.is_active = TRUE AND reservations.day_of_week = %s
-                """,
-                (weekday,),
+                WHERE users.is_active = TRUE 
+                  AND users.is_linked_with_fitnesspark = TRUE
+                  AND reservations.is_active = TRUE
+                """
             )
             records = cursor.fetchall()
             if cursor.description:
@@ -74,6 +71,7 @@ class handler(BaseHTTPRequestHandler):
         logging.info("Formatting reservations")
         formatted_data = [
             {
+                "id": record["id"],
                 "userId": record["user_id"],
                 "fitnesspark_email": record["fitnesspark_email"],
                 "key": self.encode_base64(
@@ -92,6 +90,39 @@ class handler(BaseHTTPRequestHandler):
 
     def decode_base64(self, data):
         return base64.b64decode(data).decode("utf-8")
+
+    def is_already_booked(self, reservation_id, week_start_date):
+        logging.info(
+            f"Checking if reservation {reservation_id} is already booked for the week starting on {week_start_date}"
+        )
+        connection = self.create_db_connection()
+        with connection.cursor() as cursor:
+            cursor.execute(
+                """
+                SELECT 1 FROM weekly_bookings 
+                WHERE reservation_id = %s AND week_start_date = %s
+                """,
+                (reservation_id, week_start_date),
+            )
+            result = cursor.fetchone()
+        connection.close()
+        return result is not None
+
+    def mark_as_booked(self, reservation_id, user_id, week_start_date):
+        logging.info(
+            f"Marking reservation {reservation_id} as booked for the week starting on {week_start_date}"
+        )
+        connection = self.create_db_connection()
+        with connection.cursor() as cursor:
+            cursor.execute(
+                """
+                INSERT INTO weekly_bookings (user_id, reservation_id, week_start_date)
+                VALUES (%s, %s, %s)
+                """,
+                (user_id, reservation_id, week_start_date),
+            )
+        connection.commit()
+        connection.close()
 
     def book_reservation(self, reservation):
         logging.info(
