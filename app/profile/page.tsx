@@ -49,7 +49,7 @@ export default function ProfilePage() {
             fitnesspark_email,
             fitnesspark_password,
           };
-          console.log("update user: ", newUserData)
+          console.log("update user: ", newUserData);
           await updateUserOnServer(newUserData);
           updateUserData(newUserData);
           setModalOpen(false);
@@ -181,7 +181,9 @@ export default function ProfilePage() {
       ) : (
         <div className="flex flex-col flex-grow w-full p-4 sm:p-8">
           <div className="flex-grow flex items-center justify-center mb-4">
-            <WeeklyView reservations={reservations} userId={user.id} />
+            <Card title="Planning Semanal">
+              <WeeklyView reservations={reservations} userId={user.id} />
+            </Card>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 mb-4">
             <Card title="Ajustes de Fitness Park">
