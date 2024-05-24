@@ -149,7 +149,7 @@ export function CarouselModal({
         <div className="flex-grow mx-3 mb-2 h-full flex justify-center items-center transition-all">
           {slides[currentSlide].content}
         </div>
-        <div className="absolute bottom-2 left-0 right-0 flex justify-center space-x-2">
+        <div className="mb-2 absolute bottom-2 left-0 right-0 flex justify-center space-x-2">
           {slides.map((_, index) => (
             <button
               key={index}
