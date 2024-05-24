@@ -3,7 +3,7 @@ import psycopg2
 import base64
 from http.server import BaseHTTPRequestHandler
 from datetime import datetime, timedelta
-from api._utils.booking import book
+from api._utils.booking_service import book
 import logging
 
 logging.basicConfig(level=logging.INFO)
