@@ -146,7 +146,7 @@ export function CarouselModal({
             </svg>
           </div>
         </div>
-        <div className="flex-grow mx-4 h-full flex justify-center items-center transition-all">
+        <div className="flex-grow mx-3 mb-2 h-full flex justify-center items-center transition-all">
           {slides[currentSlide].content}
         </div>
         <div className="absolute bottom-2 left-0 right-0 flex justify-center space-x-2">
