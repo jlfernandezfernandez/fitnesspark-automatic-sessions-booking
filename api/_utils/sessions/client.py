@@ -18,7 +18,7 @@ headers = {
 
 def format_date_for_payload() -> str:
     current_date = datetime.datetime.now()
-    desired_date = current_date + datetime.timedelta(days=5)
+    desired_date = current_date + datetime.timedelta(days=(7 - current_date.weekday()))
     return desired_date.strftime("%a %b %d %Y %H:%M:%S GMT%z")
 
 
@@ -32,7 +32,11 @@ def get_sessions(cookies):
         json_response = json.loads(response.text)
         return json_response["sessions"]
     else:
-        print(f"Error {response.status_code} al obtener sesiones")
+        error_message = (
+            f"Error {response.status_code} al obtener sesiones: {response.text}"
+        )
+        print(error_message)
+        return {"error": error_message}
 
 
 def book_session(cookies, session_id):
@@ -41,6 +45,8 @@ def book_session(cookies, session_id):
         "POST", url, headers=headers, timeout=5, cookies=cookies
     )
     if response.ok:
-        return response.text
+        return {"success": response.text}
     else:
-        print(f"Error {response.status_code} al reservar sesión {session_id}")
+        error_message = f"Error {response.status_code}: {response.text} al reservar sesión {session_id}"
+        print(error_message)
+        return {"error": error_message}

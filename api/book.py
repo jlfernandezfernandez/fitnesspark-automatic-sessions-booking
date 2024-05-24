@@ -25,12 +25,15 @@ class handler(BaseHTTPRequestHandler):
             for reservation in formatted_data:
                 if not self.is_already_booked(reservation["id"], week_start_date):
                     logging.info(
-                        f"Processing reservation for {reservation['fitnesspark_email']} - Activity: {reservation['activity']} at {reservation['time']}"
+                        f"Processing reservation for {reservation['fitnesspark_email']} - Activity: {reservation['activity']} at {reservation['time']} on {reservation['day_of_week']}"
                     )
-                    self.book_reservation(reservation)
-                    self.mark_as_booked(
-                        reservation["id"], reservation["userId"], week_start_date
-                    )
+                    success = self.book_reservation(reservation)
+                    if success:
+                        self.mark_as_booked(
+                            reservation["id"], reservation["userId"], week_start_date
+                        )
+                    else:
+                        self.log_failed_reservation(reservation)
         else:
             logging.info("No reservations found")
         self.send_success_response()
@@ -78,7 +81,8 @@ class handler(BaseHTTPRequestHandler):
                     f"{record['fitnesspark_email']}:{self.decode_base64(record['fitnesspark_password'])}"
                 ),
                 "activity": record["activity"],
-                "time": record["time"].strftime("%H:%M"),
+                "time": record["time"],
+                "day_of_week": record["day_of_week"],
             }
             for record in [dict(zip(col_names, row)) for row in records]
         ]
@@ -96,16 +100,21 @@ class handler(BaseHTTPRequestHandler):
             f"Checking if reservation {reservation_id} is already booked for the week starting on {week_start_date}"
         )
         connection = self.create_db_connection()
-        with connection.cursor() as cursor:
-            cursor.execute(
-                """
-                SELECT 1 FROM weekly_bookings 
-                WHERE reservation_id = %s AND week_start_date = %s
-                """,
-                (reservation_id, week_start_date),
-            )
-            result = cursor.fetchone()
-        connection.close()
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    """
+                    SELECT 1 FROM weekly_bookings 
+                    WHERE reservation_id = %s AND week_start_date = %s
+                    """,
+                    (reservation_id, week_start_date),
+                )
+                result = cursor.fetchone()
+        except Exception as e:
+            logging.error(f"Error checking if reservation is already booked: {e}")
+            result = None
+        finally:
+            connection.close()
         return result is not None
 
     def mark_as_booked(self, reservation_id, user_id, week_start_date):
@@ -113,27 +122,68 @@ class handler(BaseHTTPRequestHandler):
             f"Marking reservation {reservation_id} as booked for the week starting on {week_start_date}"
         )
         connection = self.create_db_connection()
-        with connection.cursor() as cursor:
-            cursor.execute(
-                """
-                INSERT INTO weekly_bookings (user_id, reservation_id, week_start_date)
-                VALUES (%s, %s, %s)
-                """,
-                (user_id, reservation_id, week_start_date),
-            )
-        connection.commit()
-        connection.close()
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    """
+                    INSERT INTO weekly_bookings (user_id, reservation_id, week_start_date)
+                    VALUES (%s, %s, %s)
+                    """,
+                    (user_id, reservation_id, week_start_date),
+                )
+            connection.commit()
+        except Exception as e:
+            logging.error(f"Error marking reservation as booked: {e}")
+        finally:
+            connection.close()
+
+    def log_failed_reservation(self, reservation):
+        logging.info(
+            f"Logging failed reservation for {reservation['fitnesspark_email']} - Activity: {reservation['activity']} at {reservation['time']} on {reservation['day_of_week']}"
+        )
+        connection = self.create_db_connection()
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    """
+                    INSERT INTO failed_reservations (user_id, reservation_id, date_of_failure, error_message)
+                    VALUES (%s, %s, %s, %s)
+                    """,
+                    (
+                        reservation["userId"],
+                        reservation["id"],
+                        datetime.now(),
+                        reservation.get("error_message"),
+                    ),
+                )
+            connection.commit()
+        except Exception as e:
+            logging.error(f"Error logging failed reservation: {e}")
+        finally:
+            connection.close()
 
     def book_reservation(self, reservation):
         logging.info(
-            f"Booking reservation for {reservation['fitnesspark_email']} - Activity: {reservation['activity']} at {reservation['time']}"
+            f"Booking reservation for {reservation['fitnesspark_email']} - Activity: {reservation['activity']} at {reservation['time']} on {reservation['day_of_week']}"
         )
-        book(
-            reservation["key"],
-            reservation["fitnesspark_email"],
-            reservation["activity"],
-            reservation["time"],
-        )
+        try:
+            response = book(
+                reservation["key"],
+                reservation["fitnesspark_email"],
+                reservation["activity"],
+                reservation["time"],
+                reservation["day_of_week"],
+            )
+            if response is not None:
+                reservation["error_message"] = (
+                    response  # Save the error message if there is one
+                )
+                return False
+            return True
+        except Exception as e:
+            logging.error(f"Error booking reservation: {e}")
+            reservation["error_message"] = str(e)
+            return False
 
     def send_no_bookings_response(self):
         logging.info("Sending no bookings response")
