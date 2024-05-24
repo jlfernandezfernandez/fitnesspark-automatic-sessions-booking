@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import { Button } from "./ui/button";
 import { XIcon, PlusIcon } from "lucide-react";
 import {
@@ -28,7 +28,7 @@ interface DayColumnProps {
   userId: number | undefined;
 }
 
-const DayColumn: React.FC<DayColumnProps> = React.memo(({ day, userId }) => {
+const DayColumn: React.FC<DayColumnProps> = ({ day, userId }) => {
   const [isAddingSession, setIsAddingSession] = useState<boolean>(false);
   const [newSession, setNewSession] = useState<Session>({
     id: 0,
@@ -104,7 +104,7 @@ const DayColumn: React.FC<DayColumnProps> = React.memo(({ day, userId }) => {
         console.error("Error al añadir la sesión:", error);
       }
     },
-    [userId, newSession, addToReservations, day.id]
+    [addToReservations, day.id, newSession.activity, newSession.time, userId]
   );
 
   const cancelAddSession = useCallback(() => {
@@ -129,17 +129,16 @@ const DayColumn: React.FC<DayColumnProps> = React.memo(({ day, userId }) => {
   const sessionLimit = 3;
   const sessionsCount = day.sessions.length;
 
-  const filteredClasses = useMemo(() => {
-    return day.availableClasses.filter(
-      (cls) => !sortedSessions.some((session) => session.time === cls.time)
-    );
-  }, [day.availableClasses, sortedSessions]);
+  const filteredClasses = day.availableClasses.filter(
+    (cls) =>
+      !sortedSessions.some(
+        (session) => session.time === cls.time && session.activity === cls.name
+      )
+  );
 
-  const filteredTimes = useMemo(() => {
-    return filteredClasses
-      .filter((cls) => cls.name === newSession.activity)
-      .map((cls) => cls.time);
-  }, [filteredClasses, newSession.activity]);
+  const filteredTimes = filteredClasses
+    .filter((cls) => cls.name === newSession.activity)
+    .map((cls) => cls.time);
 
   return (
     <div className="relative flex flex-col items-center m-1 p-3 sm:p-6 min-h-[450px] sm:min-h-[500px] w-full sm:w-auto bg-gray-100 dark:bg-gray-800 rounded-xl dark:text-white">
@@ -242,6 +241,6 @@ const DayColumn: React.FC<DayColumnProps> = React.memo(({ day, userId }) => {
       </div>
     </div>
   );
-});
+};
 
-export default DayColumn;
+export default React.memo(DayColumn);
