@@ -30,6 +30,15 @@ async function fetchFailedReservations(userId: number) {
   return data.failedReservations || [];
 }
 
+const extractErrorMessage = (errorMessage: string) => {
+  try {
+    const errorJson = JSON.parse(errorMessage);
+    return errorJson.message || errorMessage;
+  } catch {
+    return errorMessage;
+  }
+};
+
 const FailedReservationsList: React.FC<FailedReservationsListProps> = ({
   userId,
 }) => {
