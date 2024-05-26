@@ -1,12 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getFailedReservations } from "@/services/ReservationService";
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { userId: string } }
-) {
+export async function GET(request: NextRequest) {
   try {
-    const userId = parseInt(params.userId, 10);
+    const searchParams = request.nextUrl.searchParams;
+    const userId = parseInt(searchParams.get("userId") || "0", 10);
 
     if (isNaN(userId) || userId <= 0) {
       return NextResponse.json({

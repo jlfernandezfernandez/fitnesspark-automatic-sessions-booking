@@ -14,8 +14,8 @@ interface FailedReservationsListProps {
   userId: number | undefined;
 }
 
-const fetchFailedReservations = async (userId: number) => {
-  const response = await fetch(`/api/reservation/failed/${userId}`, {
+async function fetchFailedReservations(userId: number) {
+  const response = await fetch(`/api/reservation/failed?userId=${userId}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -28,16 +28,7 @@ const fetchFailedReservations = async (userId: number) => {
   }
   const data = await response.json();
   return data.failedReservations || [];
-};
-
-const extractErrorMessage = (errorMessage: string) => {
-  try {
-    const errorJson = JSON.parse(errorMessage);
-    return errorJson.message || errorMessage;
-  } catch {
-    return errorMessage;
-  }
-};
+}
 
 const FailedReservationsList: React.FC<FailedReservationsListProps> = ({
   userId,
