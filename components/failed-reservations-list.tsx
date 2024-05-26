@@ -15,7 +15,7 @@ interface FailedReservationsListProps {
 }
 
 const fetchFailedReservations = async (userId: number) => {
-  const response = await fetch(`/api/reservation/failed?userId=${userId}`, {
+  const response = await fetch(`/api/reservation/failed/${userId}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
