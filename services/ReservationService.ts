@@ -135,9 +135,9 @@ export async function getAllReservations(
 
 export async function getFailedReservations(
   userId: number
-): Promise<GetAllFailedReservationsResponse> {
+): Promise<FailedReservation[]> {
   if (typeof userId !== "number") {
-    return { failedReservations: [], error: "Invalid user ID", status: 400 };
+    throw new Error("Invalid user ID");
   }
 
   try {
@@ -153,7 +153,7 @@ export async function getFailedReservations(
       FROM failed_reservations 
       WHERE user_id = ${userId};
     `;
-    const failedReservations = rows.map((row: any) => ({
+    return rows.map((row: any) => ({
       id: row.id,
       userId: row.user_id,
       reservationId: row.reservation_id,
@@ -162,13 +162,8 @@ export async function getFailedReservations(
       sessionActivity: row.session_activity,
       sessionTime: row.session_time,
     }));
-    return { failedReservations, status: 200 };
   } catch (error) {
     console.error("Get failed reservations error:", error);
-    return {
-      failedReservations: [],
-      error: "Failed to get failed reservations",
-      status: 500,
-    };
+    throw new Error("Failed to get failed reservations");
   }
 }

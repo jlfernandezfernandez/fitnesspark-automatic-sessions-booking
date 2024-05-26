@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback, useMemo } from "react";
+import { getFailedReservations } from "@/services/ReservationService";
 
 interface FailedReservation {
   id: number;
@@ -12,22 +13,6 @@ interface FailedReservation {
 
 interface FailedReservationsListProps {
   userId: number | undefined;
-}
-
-async function fetchFailedReservations(userId: number) {
-  const response = await fetch(`/api/reservation/failed?userId=${userId}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-  if (!response.ok) {
-    throw new Error(
-      `Failed to fetch failed reservations: ${response.statusText}`
-    );
-  }
-  const data = await response.json();
-  return data.failedReservations || [];
 }
 
 const extractErrorMessage = (errorMessage: string) => {
@@ -52,7 +37,7 @@ const FailedReservationsList: React.FC<FailedReservationsListProps> = ({
     if (userId) {
       setIsLoading(true);
       try {
-        const data = await fetchFailedReservations(userId);
+        const data = await getFailedReservations(userId);
         setFailedReservations(data);
         setError(null);
       } catch (error: any) {
