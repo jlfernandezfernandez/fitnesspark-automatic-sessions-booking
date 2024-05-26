@@ -199,7 +199,7 @@ export default function ProfilePage() {
               </button>
             </Card>
             <Card title="Ajustes de la Cuenta">
-              <div className="flex flex-col space-y-2">
+              <div className="flex space-x-4">
                 <button
                   onClick={logout}
                   className="w-fit px-4 py-2 text-sm rounded-lg border border-gray-300 shadow-sm bg-white text-gray-700 hover:bg-gray-200 transition duration-300"
