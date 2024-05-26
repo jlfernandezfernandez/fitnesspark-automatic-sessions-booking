@@ -32,10 +32,11 @@ def get_sessions(cookies):
         json_response = json.loads(response.text)
         return json_response["sessions"]
     else:
-        error_message = (
-            f"Error {response.status_code} al obtener sesiones: {response.text}"
-        )
-        print(error_message)
+        error_message = {
+            "status_code": response.status_code,
+            "message": response.text,
+            "context": "al obtener sesiones",
+        }
         return {"error": error_message}
 
 
@@ -47,6 +48,9 @@ def book_session(cookies, session_id):
     if response.ok:
         return {"success": response.text}
     else:
-        error_message = f"Error {response.status_code}: {response.text} al reservar sesión {session_id}"
-        print(error_message)
+        error_message = {
+            "status_code": response.status_code,
+            "message": response.text,
+            "context": f"al reservar sesión {session_id}",
+        }
         return {"error": error_message}

@@ -146,14 +146,16 @@ class handler(BaseHTTPRequestHandler):
             with connection.cursor() as cursor:
                 cursor.execute(
                     """
-                    INSERT INTO failed_reservations (user_id, reservation_id, date_of_failure, error_message)
-                    VALUES (%s, %s, %s, %s)
+                    INSERT INTO failed_reservations (user_id, reservation_id, date_of_failure, error_message, session_activity, session_time)
+                    VALUES (%s, %s, %s, %s, %s, %s)
                     """,
                     (
                         reservation["userId"],
                         reservation["id"],
                         datetime.now(),
                         reservation.get("error_message"),
+                        reservation["activity"],
+                        reservation["time"],
                     ),
                 )
             connection.commit()

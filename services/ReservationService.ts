@@ -24,6 +24,22 @@ interface GetAllReservationsResponse {
   status: number;
 }
 
+interface FailedReservation {
+  id: number;
+  userId: number;
+  reservationId: number;
+  dateOfFailure: string;
+  errorMessage: string;
+  sessionActivity: string;
+  sessionTime: string;
+}
+
+interface GetAllFailedReservationsResponse {
+  failedReservations: FailedReservation[];
+  error?: string;
+  status: number;
+}
+
 const reservationSchema = Joi.object({
   userId: Joi.number().integer().required(),
   dayOfWeek: Joi.string().valid("mon", "tue", "wed", "thu", "fri").required(),
@@ -112,6 +128,46 @@ export async function getAllReservations(
     return {
       reservations: [],
       error: "Failed to get all reservations",
+      status: 500,
+    };
+  }
+}
+
+export async function getFailedReservations(
+  userId: number
+): Promise<GetAllFailedReservationsResponse> {
+  if (typeof userId !== "number") {
+    return { failedReservations: [], error: "Invalid user ID", status: 400 };
+  }
+
+  try {
+    const { rows } = await sql`
+      SELECT 
+        id, 
+        user_id, 
+        reservation_id, 
+        date_of_failure, 
+        error_message, 
+        session_activity, 
+        session_time 
+      FROM failed_reservations 
+      WHERE user_id = ${userId};
+    `;
+    const failedReservations = rows.map((row: any) => ({
+      id: row.id,
+      userId: row.user_id,
+      reservationId: row.reservation_id,
+      dateOfFailure: row.date_of_failure,
+      errorMessage: row.error_message,
+      sessionActivity: row.session_activity,
+      sessionTime: row.session_time,
+    }));
+    return { failedReservations, status: 200 };
+  } catch (error) {
+    console.error("Get failed reservations error:", error);
+    return {
+      failedReservations: [],
+      error: "Failed to get failed reservations",
       status: 500,
     };
   }

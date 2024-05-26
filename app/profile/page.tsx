@@ -7,6 +7,7 @@ import DeactivationForm from "@/components/deactivation-form";
 import WeeklyView from "@/components/WeeklyView";
 import LoadingSpinner from "@/components/ui/loading-spinner";
 import Card from "@/components/ui/card";
+import FailedReservationsList from "@/components/failed-reservations-list";
 import {
   checkFitnessParkLink,
   loginToFitnessPark,
@@ -49,7 +50,6 @@ export default function ProfilePage() {
             fitnesspark_email,
             fitnesspark_password,
           };
-          console.log("update user: ", newUserData);
           await updateUserOnServer(newUserData);
           updateUserData(newUserData);
           setModalOpen(false);
@@ -72,7 +72,6 @@ export default function ProfilePage() {
           fitnesspark_email,
           fitnesspark_password
         );
-        console.log("check if is linked: ", isLinked);
         if (isLinked) {
           await handleSuccessfulLink(fitnesspark_email, fitnesspark_password);
         } else {
@@ -185,6 +184,11 @@ export default function ProfilePage() {
               <WeeklyView reservations={reservations} userId={user.id} />
             </Card>
           </div>
+          <div className="flex-grow flex items-center justify-center mb-4">
+            <Card title="Reservas Fallidas">
+              <FailedReservationsList userId={user.id} />
+            </Card>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 mb-4">
             <Card title="Ajustes de Fitness Park">
               <button
@@ -210,7 +214,6 @@ export default function ProfilePage() {
                 </button>
               </div>
             </Card>
-            {/* Aquí se pueden agregar más tarjetas */}
           </div>
           <CarouselModal
             isOpen={isModalOpen}
