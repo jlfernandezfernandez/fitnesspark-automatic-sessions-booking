@@ -151,7 +151,8 @@ export async function getFailedReservations(
         session_activity, 
         session_time 
       FROM failed_reservations 
-      WHERE user_id = ${userId};
+      WHERE user_id = ${userId}
+      ORDER BY date_of_failure DESC;
     `;
     return rows.map((row: any) => ({
       id: row.id,
