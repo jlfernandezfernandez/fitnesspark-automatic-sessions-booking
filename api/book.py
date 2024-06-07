@@ -24,8 +24,6 @@ class handler(BaseHTTPRequestHandler):
             if records:
                 logging.info(f"Found {len(records)} reservations")
                 formatted_data = self.format_reservations(col_names, records)
-                to_mark_as_booked = []
-                to_log_failed = []
 
                 for reservation in formatted_data:
                     if not self.is_already_booked(
@@ -36,29 +34,19 @@ class handler(BaseHTTPRequestHandler):
                         )
                         success = self.book_reservation(reservation)
                         if success:
-                            to_mark_as_booked.append(
-                                (
-                                    reservation["id"],
-                                    reservation["userId"],
-                                    week_start_date,
-                                )
+                            self.mark_as_booked(
+                                reservation["id"], reservation["userId"], week_start_date, connection
                             )
                         else:
                             if self.handle_failed_reservation(
-                                reservation, week_start_date, to_mark_as_booked
+                                reservation, week_start_date, connection
                             ):
-                                to_mark_as_booked.append(
-                                    (
-                                        reservation["id"],
-                                        reservation["userId"],
-                                        week_start_date,
-                                    )
+                                self.mark_as_booked(
+                                    reservation["id"], reservation["userId"], week_start_date, connection
                                 )
                             else:
-                                to_log_failed.append(reservation)
+                                self.log_failed_reservation(reservation, connection)
 
-                self.batch_mark_as_booked(to_mark_as_booked, connection)
-                self.batch_log_failed_reservations(to_log_failed, connection)
             else:
                 logging.info("No reservations found")
             self.send_success_response()
@@ -136,49 +124,48 @@ class handler(BaseHTTPRequestHandler):
         )
         return bool(result)
 
-    def batch_mark_as_booked(self, reservations, connection):
-        logging.info(f"Marking {len(reservations)} reservations as booked")
-        if not reservations:
-            return
-        query = """
-            INSERT INTO weekly_bookings (user_id, reservation_id, week_start_date)
-            VALUES %s
-        """
-        data = ", ".join(
-            connection.cursor().mogrify("(%s,%s,%s)", res).decode("utf-8")
-            for res in reservations
+    def mark_as_booked(self, reservation_id, user_id, week_start_date, connection):
+        logging.info(
+            f"Marking reservation {reservation_id} as booked for the week starting on {week_start_date}"
         )
-        self.execute_query(connection, query % data)
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    """
+                    INSERT INTO weekly_bookings (user_id, reservation_id, week_start_date)
+                    VALUES (%s, %s, %s)
+                    """,
+                    (user_id, reservation_id, week_start_date),
+                )
+            connection.commit()
+        except Exception as e:
+            logging.error(f"Error marking reservation as booked: {e}")
 
-    def batch_log_failed_reservations(self, reservations, connection):
-        logging.info(f"Logging {len(reservations)} failed reservations")
-        if not reservations:
-            return
-        query = """
-            INSERT INTO failed_reservations (user_id, reservation_id, date_of_failure, error_message, session_activity, session_time)
-            VALUES %s
-        """
-        data = ", ".join(
-            connection.cursor()
-            .mogrify(
-                "(%s,%s,%s,%s,%s,%s)",
-                (
-                    res["userId"],
-                    res["id"],
-                    datetime.now(),
-                    json.dumps(res.get("error_message")),
-                    res["activity"],
-                    res["time"],
-                ),
-            )
-            .decode("utf-8")
-            for res in reservations
+    def log_failed_reservation(self, reservation, connection):
+        logging.info(
+            f"Logging failed reservation for {reservation['fitnesspark_email']} - Activity: {reservation['activity']} at {reservation['time']} on {reservation['day_of_week']}"
         )
-        self.execute_query(connection, query % data)
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    """
+                    INSERT INTO failed_reservations (user_id, reservation_id, date_of_failure, error_message, session_activity, session_time)
+                    VALUES (%s, %s, %s, %s, %s, %s)
+                    """,
+                    (
+                        reservation["userId"],
+                        reservation["id"],
+                        datetime.now(),
+                        json.dumps(reservation.get("error_message")),
+                        reservation["activity"],
+                        reservation["time"],
+                    ),
+                )
+            connection.commit()
+        except Exception as e:
+            logging.error(f"Error logging failed reservation: {e}")
 
-    def handle_failed_reservation(
-        self, reservation, week_start_date, to_mark_as_booked
-    ):
+    def handle_failed_reservation(self, reservation, week_start_date, connection):
         error_message = reservation.get("error_message")
         if (
             error_message
@@ -187,9 +174,6 @@ class handler(BaseHTTPRequestHandler):
         ):
             logging.info(
                 f"Reservation already booked for {reservation['fitnesspark_email']} - Activity: {reservation['activity']} at {reservation['time']} on {reservation['day_of_week']}. Marking as booked."
-            )
-            to_mark_as_booked.append(
-                (reservation["id"], reservation["userId"], week_start_date)
             )
             return True
         return False
