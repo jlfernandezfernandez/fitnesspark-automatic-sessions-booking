@@ -81,7 +81,7 @@ def log_failed_reservation(reservation, connection):
                     reservation["userId"],
                     reservation["id"],
                     datetime.now(),
-                    json.dumps(reservation.get("error_message")),
+                    json.dumps(reservation.get("error_message").get("message", "")),
                     reservation["activity"],
                     reservation["time"],
                 ),
