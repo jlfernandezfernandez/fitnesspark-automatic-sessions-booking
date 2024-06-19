@@ -7,7 +7,9 @@ import json
 
 def create_db_connection():
     logging.info("Creating database connection")
-    return psycopg2.connect(os.environ.get("POSTGRES_URL"))
+    return psycopg2.connect(
+        os.environ.get("POSTGRES_URL"), options="-c client_encoding=UTF8"
+    )
 
 
 def fetch_reservations(connection):
@@ -81,7 +83,10 @@ def log_failed_reservation(reservation, connection):
                     reservation["userId"],
                     reservation["id"],
                     datetime.now(),
-                    json.dumps(reservation.get("error_message").get("message", "")),
+                    json.dumps(
+                        reservation.get("error_message").get("message", ""),
+                        ensure_ascii=False,
+                    ),
                     reservation["activity"],
                     reservation["time"],
                 ),
