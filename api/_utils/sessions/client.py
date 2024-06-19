@@ -34,7 +34,7 @@ def get_sessions(cookies):
     else:
         error_message = {
             "status_code": response.status_code,
-            "message": response.text,
+            "message": response.json().get("message", "Unknown error"),
             "context": "al obtener sesiones",
         }
         return {"error": error_message}
@@ -50,7 +50,7 @@ def book_session(cookies, session_id):
     else:
         error_message = {
             "status_code": response.status_code,
-            "message": response.text,
+            "message": response.json().get("message", "Unknown error"),
             "context": f"al reservar sesión {session_id}",
         }
         return {"error": error_message}
