@@ -1,19 +1,21 @@
+import json
 import os
 import psycopg2
 import logging
-from datetime import datetime
-import json
 
 
 def create_db_connection():
-    logging.info("Creating database connection")
-    return psycopg2.connect(
-        os.environ.get("POSTGRES_URL"), options="-c client_encoding=UTF8"
-    )
+    try:
+        connection = psycopg2.connect(
+            os.environ.get("POSTGRES_URL"), options="-c client_encoding=UTF8"
+        )
+        return connection
+    except Exception as e:
+        logging.error(f"Error creating database connection: {e}")
+        raise e
 
 
 def fetch_reservations(connection):
-    logging.info("Fetching reservations")
     query = """
         SELECT reservations.*, users.fitnesspark_email, users.fitnesspark_password 
         FROM reservations
@@ -22,75 +24,69 @@ def fetch_reservations(connection):
           AND users.is_linked_with_fitnesspark = TRUE
           AND reservations.is_active = TRUE
     """
-    return execute_query(connection, query)
-
-
-def execute_query(connection, query, params=None):
     try:
         with connection.cursor() as cursor:
-            cursor.execute(query, params)
+            cursor.execute(query)
             records = cursor.fetchall()
             col_names = [desc[0] for desc in cursor.description]
+        return col_names, records
     except Exception as e:
-        logging.error(f"Error executing query: {e}")
-        records = []
-        col_names = []
-    return col_names, records
+        logging.error(f"Error fetching reservations: {e}")
+        return [], []
 
 
 def is_already_booked(reservation_id, week_start_date, connection):
-    logging.info(
-        f"Checking if reservation {reservation_id} is already booked for the week starting on {week_start_date}"
-    )
     query = """
         SELECT 1 FROM weekly_bookings 
         WHERE reservation_id = %s AND week_start_date = %s
     """
-    _, result = execute_query(connection, query, (reservation_id, week_start_date))
-    return bool(result)
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(query, (reservation_id, week_start_date))
+            result = cursor.fetchone()
+        return bool(result)
+    except Exception as e:
+        logging.error(f"Error checking booking: {e}")
+        return False
 
 
-def mark_as_booked(reservation_id, user_id, week_start_date, connection):
-    logging.info(
-        f"Marking reservation {reservation_id} as booked for the week starting on {week_start_date}"
-    )
+def mark_as_booked(
+    reservation_id, user_id, week_start_date, connection, session_datetime
+):
+    query = """
+        INSERT INTO weekly_bookings (user_id, reservation_id, week_start_date, booking_date, session_datetime)
+        VALUES (%s, %s, %s, NOW(), %s)
+    """
     try:
         with connection.cursor() as cursor:
             cursor.execute(
-                """
-                INSERT INTO weekly_bookings (user_id, reservation_id, week_start_date)
-                VALUES (%s, %s, %s)
-                """,
-                (user_id, reservation_id, week_start_date),
+                query, (user_id, reservation_id, week_start_date, session_datetime)
             )
         connection.commit()
     except Exception as e:
-        logging.error(f"Error marking reservation as booked: {e}")
+        logging.error(f"Error marking as booked: {e}")
+        connection.rollback()
 
 
 def log_failed_reservation(reservation, connection):
-    logging.info(
-        f"Logging failed reservation for {reservation['fitnesspark_email']} - Activity: {reservation['activity']} at {reservation['time']} on {reservation['day_of_week']}"
-    )
+    query = """
+        INSERT INTO failed_reservations (user_id, reservation_id, date_of_failure, error_message, session_activity, session_time, session_datetime)
+        VALUES (%s, %s, NOW(), %s, %s, %s, %s)
+    """
     try:
         with connection.cursor() as cursor:
             cursor.execute(
-                """
-                INSERT INTO failed_reservations (user_id, reservation_id, date_of_failure, error_message, session_activity, session_time)
-                VALUES (%s, %s, %s, %s, %s, %s)
-                """,
+                query,
                 (
                     reservation["userId"],
                     reservation["id"],
-                    datetime.now(),
-                    json.dumps(
-                        reservation.get("error_message").get("message", ""),
-                        ensure_ascii=False,
-                    ),
+                    json.dumps(reservation.get("error_message"), ensure_ascii=False),
                     reservation["activity"],
                     reservation["time"],
+                    reservation["session_datetime"],
                 ),
             )
         connection.commit()
     except Exception as e:
         logging.error(f"Error logging failed reservation: {e}")
+        connection.rollback()

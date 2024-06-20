@@ -37,13 +37,10 @@ def can_book_session(session):
     if not session:
         return False, "No se ha encontrado ninguna sesión para reservar."
     if session["isBooked"]:
-        return (
-            True,
-            None,
-        )  # Si ya está reservado, podemos considerar que la sesión está reservada
+        return True, None
     if session["isFull"]:
         return False, "La sesión está completa."
-    if session["remainingPlace"] <= 8:
+    if session["remainingPlace"] <= 1:
         return False, "No hay suficientes plazas libres."
 
     session_date = datetime.fromisoformat(session["session_datetime"]).date()
@@ -54,30 +51,40 @@ def can_book_session(session):
     return True, None
 
 
-def book(key, email, activity, time, day_of_week):
-    cookies = login(key)
-    sessions = get_sessions(cookies)
-    if "error" in sessions:
-        return sessions["error"]  # Return the error message
+def reserve_session(cookies, session_info, email, activity, time):
+    session_id = session_info["id"]
+    logging.info(f"Reservando sesión {activity} a las {time} para {email}")
+    response = book_session(cookies, session_id)
+    if "error" in response:
+        return "error", response
+    return "reserva", session_info
 
-    session_info = get_session_to_book(sessions, activity, time, day_of_week)
-    if session_info:
+
+def book(key, email, activity, time, day_of_week):
+    try:
+        cookies = login(key)
+        sessions = get_sessions(cookies)
+        if "error" in sessions:
+            return "error", sessions["error"]
+
+        session_info = get_session_to_book(sessions, activity, time, day_of_week)
+        if not session_info:
+            logging.error(f"No se ha encontrado ninguna sesión para {email}")
+            return "none", None
+
         can_book, error_message = can_book_session(session_info)
-        if can_book:
-            if not session_info["isBooked"]:
-                session_id = session_info["id"]
-                logging.info(f"Reservando sesión {activity} a las {time} para {email}")
-                response = book_session(cookies, session_id)
-                if "error" in response:
-                    return response  # Return the error message
-            return session_info  # Success, return session info
-        else:
+        if not can_book:
             logging.error(error_message)
-            return error_message
-    else:
-        error_message = f"No se ha encontrado ninguna sesión para {email}"
-        logging.error(error_message)
-        return error_message
+            return "error", error_message
+
+        if not session_info["isBooked"]:
+            return reserve_session(cookies, session_info, email, activity, time)
+
+        return "reserva", session_info
+
+    except Exception as e:
+        logging.error(f"Error booking reservation: {e}")
+        return "error", str(e)
 
 
 def book_reservation(reservation):
@@ -85,24 +92,32 @@ def book_reservation(reservation):
         f"Booking reservation for {reservation['fitnesspark_email']} - Activity: {reservation['activity']} at {reservation['time']} on {reservation['day_of_week']}"
     )
     try:
-        response = book(
+        status, response = book(
             reservation["key"],
             reservation["fitnesspark_email"],
             reservation["activity"],
             reservation["time"],
             reservation["day_of_week"],
         )
-        if isinstance(response, dict):
-            reservation["session_datetime"] = response["session_datetime"]
-            reservation["isBooked"] = response["isBooked"]
-            reservation["isFull"] = response["isFull"]
-            reservation["remainingPlace"] = response["remainingPlace"]
+        if status == "reserva" and isinstance(response, dict):
+            reservation.update(
+                {
+                    "session_datetime": response.get("session_datetime"),
+                    "isBooked": response.get("isBooked"),
+                    "isFull": response.get("isFull"),
+                    "remainingPlace": response.get("remainingPlace"),
+                }
+            )
             return True
-        else:
-            reservation["error_message"] = {
-                "message": response
-            }  # Save the error message as a dict
+        elif status == "error":
+            reservation["error_message"] = {"message": response}
             return False
+        else:
+            logging.info(
+                f"No se ha encontrado ninguna sesión para {reservation['fitnesspark_email']}"
+            )
+            return False
+
     except Exception as e:
         logging.error(f"Error booking reservation: {e}")
         reservation["error_message"] = {"message": str(e)}

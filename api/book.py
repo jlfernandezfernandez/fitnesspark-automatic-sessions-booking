@@ -74,15 +74,31 @@ class handler(BaseHTTPRequestHandler):
         success = book_reservation(reservation)
         if success:
             mark_as_booked(
-                reservation["id"], reservation["userId"], week_start_date, connection
+                reservation["id"],
+                reservation["userId"],
+                week_start_date,
+                connection,
+                reservation["session_datetime"],
             )
-        else:
+        elif (
+            reservation.get("error_message")
+            and reservation["error_message"]["message"]
+            != "No se ha encontrado ninguna sesión para reservar."
+        ):
             self.handle_failed_booking(reservation, week_start_date, connection)
+        else:
+            logging.info(
+                f"No se ha encontrado ninguna sesión para {reservation['fitnesspark_email']} - Activity: {reservation['activity']} at {reservation['time']} on {reservation['day_of_week']}"
+            )
 
     def handle_failed_booking(self, reservation, week_start_date, connection):
         if self.should_mark_as_booked(reservation):
             mark_as_booked(
-                reservation["id"], reservation["userId"], week_start_date, connection
+                reservation["id"],
+                reservation["userId"],
+                week_start_date,
+                connection,
+                reservation["session_datetime"],
             )
         else:
             log_failed_reservation(reservation, connection)
@@ -90,7 +106,7 @@ class handler(BaseHTTPRequestHandler):
     def should_mark_as_booked(self, reservation):
         error_message = reservation.get("error_message")
         return (
-            error_message
+            isinstance(error_message, dict)
             and error_message.get("status_code") == 400
             and "Ya estás inscrito a esta clase." in error_message.get("message", "")
         )

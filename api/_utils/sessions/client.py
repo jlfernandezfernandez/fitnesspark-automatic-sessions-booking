@@ -18,7 +18,7 @@ headers = {
 
 def format_date_for_payload() -> str:
     current_date = datetime.datetime.now()
-    desired_date = current_date + datetime.timedelta(days=(7 - current_date.weekday()))
+    desired_date = current_date + datetime.timedelta(days=(5 - current_date.weekday()))
     return desired_date.strftime("%a %b %d %Y %H:%M:%S GMT%z")
 
 
