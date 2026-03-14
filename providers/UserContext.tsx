@@ -10,7 +10,6 @@ import React, {
 } from "react";
 import { UserProps } from "@/model/UserData";
 import { useRouter } from "next/navigation";
-import { destroyCookie, parseCookies, setCookie } from "nookies";
 import { getAllReservations } from "@/services/ReservationService";
 
 interface Reservation {
@@ -45,27 +44,30 @@ export const UserContext = createContext<UserContextType>(defaultContext);
 
 export const useUser = () => useContext(UserContext);
 
+const getCookie = (name: string) => {
+  const value = `; ${document.cookie}`;
+  const parts = value.split(`; ${name}=`);
+  if (parts.length === 2) return parts.pop()?.split(";").shift();
+};
+
+const setCookie = (name: string, value: string, days: number) => {
+  let expires = "";
+  if (days) {
+    const date = new Date();
+    date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+    expires = "; expires=" + date.toUTCString();
+  }
+  document.cookie = name + "=" + (value || "") + expires + "; path=/";
+};
+
+const deleteCookie = (name: string) => {
+  document.cookie = name + "=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+};
+
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<UserProps | undefined>();
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const router = useRouter();
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const cookies = parseCookies();
-      const sessionUser = cookies.sessionUser;
-
-      if (sessionUser) {
-        const userData = JSON.parse(sessionUser);
-        setUser(userData);
-        getReservations(userData.id);
-      } else {
-        router.push("/");
-      }
-    };
-
-    fetchData();
-  }, [router]);
 
   const getReservations = useCallback(async (userId: number) => {
     const { reservations, status } = await getAllReservations(userId);
@@ -74,14 +76,28 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
+  useEffect(() => {
+    const sessionUser = getCookie("sessionUser");
+
+    if (sessionUser) {
+      try {
+        const userData = JSON.parse(decodeURIComponent(sessionUser));
+        setUser(userData);
+        getReservations(userData.id);
+      } catch (e) {
+        console.error("Failed to parse sessionUser cookie", e);
+        router.push("/");
+      }
+    } else {
+      router.push("/");
+    }
+  }, [router, getReservations]);
+
   const login = useCallback(
     (userData: UserProps) => {
       setUser(userData);
       getReservations(userData.id);
-      setCookie(null, "sessionUser", JSON.stringify(userData), {
-        maxAge: 30 * 24 * 60 * 60, // 30 days
-        path: "/",
-      });
+      setCookie("sessionUser", JSON.stringify(userData), 30);
     },
     [getReservations]
   );
@@ -89,7 +105,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const logout = useCallback(() => {
     setUser(undefined);
     setReservations([]);
-    destroyCookie(null, "sessionUser");
+    deleteCookie("sessionUser");
     router.push("/");
   }, [router]);
 
@@ -103,10 +119,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
           ...userData,
         };
         if (JSON.stringify(prevUser) !== JSON.stringify(newUser)) {
-          setCookie(null, "sessionUser", JSON.stringify(newUser), {
-            maxAge: 30 * 24 * 60 * 60,
-            path: "/",
-          });
+          setCookie("sessionUser", JSON.stringify(newUser), 30);
           return newUser;
         }
         return prevUser;
